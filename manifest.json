@@ -1,0 +1,21 @@
+{
+  "manifest_version": 2,
+
+  "name": "Substition Cipher",
+  "description": "This extension performs a substition cipher on the text of a web page",
+  "version": "1.0",
+
+  "permissions": [
+    "activeTab"
+  ],
+
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+
+  "browser_action": {
+    "default_title": "Perform substition cipher on this page",
+    "default_icon": "icon.png"
+  }
+}
