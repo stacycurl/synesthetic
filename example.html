@@ -1,6 +1,20 @@
-<ul>
-	<li>a b c d e f g h i j k l m</li>
-	<li>n o p q r s t u v w x y z</li>
+<ul id="list">
+	<li>lx</li>
+
+	<li> abcdefgh</li>
+	<li>ijklmnopq</li>
+	<li>rstuvwxyz</li>
+	<li/>
+	<li>etaonrish</li>
+	<li>aehinorst</li>
+	<li/>
+	<li>oux</li>
+	<li/>
+	<li/>
+	<li>de gh jk js kt pq vw st</li>
+	<li>  A B C D E F G H</li>
+	<li>I J K L M N O P Q</li>
+	<li>R S T U V W X Y Z</li>
 	<li>0 1 2 3 4 5 6 7 8 9 , . '</li>
 	<li>a b c d e f g h i j k l m n o p q r s t u v w x y z</li>
 	<li>  ir ajs bkt clu dmv enw fox gpy hqz</li>
@@ -12,3 +26,34 @@
 	The last demo got me so excited! A lot of the elements in that demo, I've been trying to create for ages by patching together tools, but now I can't wait for this seamless process. It's going to make coding so much more productive, with less time wasted on administrative stuff.
 	</li>
 </ul>
+<script type="text/javascript">
+  var list = document.getElementById("list")
+  var alphabet = "abcdefghijklmnopqrstuvwxyz"
+    // "z rfb txh ica degjklmnopqsuvwy"
+
+  for (var i = 0; i < alphabet.length; i++) {
+    var first = alphabet[i]
+
+    var li = document.createElement("li")
+
+    if (first != " ") {
+      var text = ""
+
+      for (var j = 0; j < alphabet.length; j++) {
+        var second = alphabet[j]
+        if (second != " ") {
+          if (first != second) {
+            text = text + first + second + " "
+          } else {
+            text = text + "   "
+          }
+	}
+      }
+
+      li.appendChild(document.createTextNode(text))
+    }
+
+    list.appendChild(li)
+  }
+
+</script>

@@ -6,7 +6,8 @@ chrome.browserAction.onClicked.addListener(function(tab) {
   }
 
   //console.log('Substituting ...');
-  
+
+  chrome.tabs.executeScript(null, { file: "cube-3d/squares.js" }, function() {
   chrome.tabs.executeScript({
     code: injectScript(function() {
       function mapText(update) {
@@ -25,48 +26,20 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 	recurse(document.getElementsByTagName('html')[0]);
       }
 
-      function padLeft(toPad, padTo, padWith) {
-        return Array(padTo - toPad.length + 1).join(padWith) + toPad;
-      }
+      var cube = new LetterCube({
+	front: { a: [0.33, 0], c: [0, 0.33] },
+        left:  { i: [0.66, 0] },
+        back:  { s: [0.5,  0.16], v: [0.5, 0.66], w: [0, 0.66], y: [0.33, 1] },
+        right: { n: [0.66, 0.33] }
+      })
 
-      function appendMapping(zero, one, two, asciiOffset, from, count, mapping) {
-	var styles = {'0': zero, '1': one, '2': two}
-
-	for (var i = from; i < (count + from); i++) {
-          var ascii = String.fromCharCode(asciiOffset + i - 1)
-          var inBase3 = padLeft((i).toString(3), 3, '0')
-          var stylesArray = [styles[inBase3[0]], styles[inBase3[1]], styles[inBase3[2]]]
-
-	  // console.log(["appendMapping", ascii, i, inBase3, stylesArray])
-	  mapping[ascii] = stylesArray
-	}
-
-	return mapping
-      }
-
-      function buildMapping() {
-        var mapping = {}
-	var white = "#ffffff", grey = "#aaaaaa", blue = "#9999ff", black = "#000000"
-
-	// a-z
-        appendMapping(white, blue, black, 97, 1, 26, mapping)
-        // 0-9
-        appendMapping(grey, blue, black, 49, 0, 10, mapping)
-	mapping[',']  = [white, white, grey]
-	mapping['.']  = [grey, white, grey]
-	mapping['\''] = [grey, white, white]
-	mapping['’']  = [grey, white, white]
-
-	return mapping
-      }
-
-      var mapping = buildMapping();
+      var mapping = cube.toHex()
 
       function drawTexts(texts, ctx) {
 	// console.log("drawTexts.texts:", texts)
 	for (var y in texts) {
-	  var text = texts[y].replace(/[^a-z0-9 ,.\'’]/g, '')
-	  console.log("drawTexts.text:", text);
+	  var text = texts[y].replace(/[^a-zA-Z ,]/g, '')
+	  //console.log("drawTexts.text:", text);
 
           for (var x in text) {
             draw(text[x], x, y, ctx)
@@ -76,9 +49,9 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 
       var xsize = 5;
       var ysize = 5;
-      var maxWords = 26
+      var maxWords = 13
       var gap = ysize
-      var letterHeight = ysize * 3
+      var letterHeight = ysize
       var spaces = " "
 
       function draw(letter, xoffset, yoffset, ctx) {
@@ -86,14 +59,12 @@ chrome.browserAction.onClicked.addListener(function(tab) {
         var mapped = mapping[letter];
 
 	if (mapped != undefined) {
-	  for (var b = 0; b < 3; b++) {
-            drawRect(
-	      ctx,
-              1 + xoffset * xsize,
-	      1 + b * ysize + yoffset * (gap + letterHeight),
-              mapped[b]
-            );
-	  }
+          drawRect(
+	    ctx,
+            1 + xoffset * xsize,
+	    1 + yoffset * (gap + letterHeight),
+            mapped
+          );
 	}
       }
 
@@ -118,6 +89,7 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 
       function groupText(text, words) {
 	var texts = groupByN(text.toLowerCase().split(' '), words);
+	//var texts = groupByN(text.split(' '), words);
 
         // console.log("groupText.result", texts);
 	return texts
@@ -155,5 +127,5 @@ chrome.browserAction.onClicked.addListener(function(tab) {
       });
       //*/
     })
-  });
+  })})
 });

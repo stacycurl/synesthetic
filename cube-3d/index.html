@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Article: http://www.paulrhayes.com/2009-07/animated-css3-cube-interface-using-3d-transforms/ -->
+    <!-- Demo: http://www.paulrhayes.com/experiments/cube-3d/ -->
+    <!-- Originally posted: 17th July 2009 -->
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>3D CSS cube, use arrow keys to rotate &mdash; Paul Hayes</title>
+    <meta name="author" content="Paul Hayes" />
+    <link rel="stylesheet" href="experiment-styles.css" />
+</head>
+<body class="experiment">
+    <div class="wrapper">
+      <p class="learn">&nbsp;</p>
+<style>
+    #experiment {
+      -webkit-perspective: 800;
+      -webkit-perspective-origin: 50% 200px;
+
+      -moz-perspective: 800;
+      -moz-perspective-origin: 50% 200px;
+    }
+
+    #cube {
+      position: relative;
+      margin: 100px auto 0;
+      height: 400px;
+      width: 400px;
+      -webkit-transition: -webkit-transform 2s linear;
+      -webkit-transform-style: preserve-3d;
+
+      -moz-transition: -moz-transform 2s linear;
+      -moz-transform-style: preserve-3d;
+    }
+
+    .face {
+      position: absolute;
+      height: 400px;
+      width: 400px;
+ /*     background-color: rgba(50, 50, 50, 0.7); */
+      font-size: 27px;
+      line-height: 1em;
+      color: #fff;
+      border: 1px solid #555;
+      border-radius: 3px;
+      table-layout: fixed;
+    }
+
+    table.face {
+      background-size: 100%
+    }
+
+    td {
+      border: 1px solid;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    /*
+    ._ { background-color: rgb(255, 255, 255) }
+    .a { background-color: rgb(128, 128, 255) }
+    .b { background-color: rgb(  0,   0, 255) }
+    .c { background-color: rgb(128, 255, 128) }
+    .d { background-color: rgb( 64, 192, 192) }
+    .e { background-color: rgb(  0, 128, 255) }
+    .f { background-color: rgb(  0, 255,   0) }
+   .gg { background-color: rgb(  0, 255, 128) }
+    .h { background-color: rgb(  0, 255, 255) }
+    .i { background-color: rgb(255, 128, 128) }
+    .j { background-color: rgb(192,  64, 192) }
+    .k { background-color: rgb(128,   0, 255) }
+    .l { background-color: rgb(192, 192,  64) }
+    .m { background-color: rgb(128, 128, 128) }
+    .n { background-color: rgb( 64,  64, 192) }
+    .o { background-color: rgb(128, 255,   0) }
+    .p { background-color: rgb(128, 192,   0) }
+    .q { background-color: rgb(  0, 128, 128) }
+    .r { background-color: rgb(255,   0,   0) }
+   .rr { background-color: rgb(255,   0,   0) }
+    .s { background-color: rgb(255,   0, 128) }
+    .t { background-color: rgb(255,   0, 255) }
+    .u { background-color: rgb(255, 128,   0) }
+    .v { background-color: rgb(192,  64,  64) }
+    .w { background-color: rgb(128,   0, 128) }
+    .x { background-color: rgb(255, 255,   0) }
+    .y { background-color: rgb(128, 128,   0) }
+    .z { background-color: rgb(  0,   0,   0) }
+    */
+
+    #cube .top  {
+      -webkit-transform: rotateX(90deg) translateZ(200px);
+      -moz-transform: rotateX(90deg) translateZ(200px);
+    }
+
+    #cube .front {
+      -webkit-transform: translateZ(200px);
+      -moz-transform: translateZ(200px);
+    }
+
+    #cube .right {
+      -webkit-transform: rotateY(90deg) translateZ(200px);
+      -moz-transform: rotateY(90deg) translateZ(200px);
+    }
+
+    #cube .back {
+      -webkit-transform: rotateY(180deg) translateZ(200px);
+      -moz-transform: rotateY(180deg) translateZ(200px);
+    }
+
+    #cube .left {
+      -webkit-transform: rotateY(-90deg) translateZ(200px);
+      -moz-transform: rotateY(-90deg) translateZ(200px);
+    }
+
+    #cube .bottom {
+      -webkit-transform: rotateX(-90deg) rotate(180deg) translateZ(200px);
+      -moz-transform: rotateX(-90deg) rotate(180deg) translateZ(200px);
+    }
+</style>
+
+
+<div id="experiment">
+    <div id="cube">
+	    <!--
+      <img class="face one" src="face-one.png"/>
+      <img class="face two" src="face-two.png"/>
+      <img class="face three" src="face-three.png"/>
+      <img class="face four" src="face-four.png"/>
+      <img class="face five" src="face-five.png"/>
+      <img class="face six" src="face-six.png"/>
+      -->
+          <table class="face top">
+            <tr><td class="x">x</td><td class="y">y</td><td class="z"/>z</td></tr>
+            <tr><td class="o">o</td><td class="p">p</td><td class="q"/>q</td></tr>
+            <tr><td class="f">f</td><td class="gg">g</td><td class="h"/>h</td></tr>
+          </table>
+          <table class="face front">
+            <tr><td class="f">f</td><td class="gg">g</td><td class="h"/>h</td></tr>
+            <tr><td class="c">c</td><td class="d">d</td><td class="e"/>e</td></tr>
+            <tr><td class="_">&nbsp;</td><td class="a">a</td><td class="b"/>b</td></tr>
+          </table>
+          <table class="face right">
+            <tr><td class="h">h</td><td class="q">q</td><td class="z"/>z</td></tr>
+            <tr><td class="e">e</td><td class="n">n</td><td class="w"/>w</td></tr>
+            <tr><td class="b">b</td><td class="k">k</td><td class="t"/>t</td></tr>
+          </table>
+          <table class="face back">
+            <tr><td class="z">z</td><td class="y">y</td><td class="x"/>x</td></tr>
+            <tr><td class="w">w</td><td class="v">v</td><td class="u"/>u</td></tr>
+            <tr><td class="t">t</td><td class="s">s</td><td class="rr"/>r</td></tr>
+          </table>
+          <table class="face left">
+            <tr><td class="x">x</td><td class="o">o</td><td class="f"/>f</td></tr>
+            <tr><td class="u">u</td><td class="l">l</td><td class="c"/>c</td></tr>
+            <tr><td class="rr">r</td><td class="i">i</td><td class="_"/>&nbsp;</td></tr>
+          </table>
+          <table class="face bottom">
+            <tr><td class="t">t</td><td class="s">s</td><td class="rr"/>r</td></tr>
+            <tr><td class="k">k</td><td class="j">j</td><td class="i"/>i</td></tr>
+            <tr><td class="b">b</td><td class="a">a</td><td class="_"/>&nbsp;</td></tr>
+          </table>
+    </div>
+</div>
+    </div>
+    <script type="text/javascript" src="squares.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <script>
+        
+var cube = new LetterCube()
+
+function setBackground(css, faceName, rotation) {
+  // console.log(faceName, cube[faceName].leftTop)
+
+  document.querySelector(css).setAttribute("background", 
+    cube.cube[faceName].dataURL(100))
+}
+
+setBackground(".top",    "top")
+setBackground(".front",  "front")
+setBackground(".right",  "right")
+setBackground(".back",   "back")
+setBackground(".left",   "left")
+setBackground(".bottom", "bottom")
+
+var letters = {
+ '_': "000",
+ 'a': "001",
+ 'b': "002",
+ 'c': "010",
+ 'd': "011",
+ 'e': "012",
+ 'f': "020",
+ 'g': "021",
+ 'h': "022",
+ 'i': "100",
+ 'j': "101",
+ 'k': "102",
+ 'l': "110",
+ 'm': "111",
+ 'n': "112",
+ 'o': "120",
+ 'p': "121",
+ 'q': "122",
+ 'r': "200",
+ 's': "201",
+ 't': "202",
+ 'u': "210",
+ 'v': "211",
+ 'w': "212",
+ 'x': "220",
+ 'y': "221",
+ 'z': "222"
+}
+
+var props = 'transform WebkitTransform MozTransform OTransform msTransform'.split(' '),
+    prop,
+    el = document.createElement('div');
+
+for(var i = 0, l = props.length; i < l; i++) {
+    if(typeof el.style[props[i]] !== "undefined") {
+        prop = props[i];
+        break;
+    }
+}
+
+var xAngle = 0, yAngle = 0;
+$('body').keydown(function(evt) {
+    var angle = 45
+    switch(evt.keyCode) {
+        case 37: // left
+            yAngle -= angle;
+            break;
+
+        case 38: // up
+            xAngle += angle;
+            break;
+
+        case 39: // right
+            yAngle += angle;
+            break;
+
+        case 40: // down
+            xAngle -= angle;
+            break;
+
+        case 65: // a
+
+	    break;
+
+	case 48: // 0
+	    break;
+    };
+    document.getElementById('cube').style[prop] = "rotateX("+xAngle+"deg) rotateY("+yAngle+"deg)";
+});    </script>
+    </body>
+</html>

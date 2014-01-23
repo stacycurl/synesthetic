@@ -10,7 +10,7 @@
   ],
 
   "background": {
-    "scripts": ["background.js"],
+    "scripts": ["cube-3d/squares.js", "background.js"],
     "persistent": false
   },
 
