@@ -30,16 +30,38 @@ function LetterCube(offsets0) {
     new ColourSquare(f, h, z, b),
     new ColourSquare(_, x, t, r)
   )
-  //cube = rgb
-  //cube = cube.shuffle()
 
   var interpolations = {
-    front:  { a: [0.5, 0.0], c: [0.0, 0.5], e: [1.0, 0.5], g: [0.5, 1.0], d: [0.5, 0.5] },
-    back:   { s: [0.5, 0.0], u: [1.0, 0.5], w: [0.0, 0.5], y: [0.5, 1.0], v: [0.5, 0.5] },
-    left:   { i: [0.5, 0.0], o: [0.5, 1.0], l: [0.5, 0.5] },
-    right:  { k: [0.5, 0.0], q: [0.5, 1.0], n: [0.5, 0.5] },
-    top:    { p: [0.5, 0.5], g: [0.5, 0.33] },
-    bottom: { j: [0.5, 0.5] }
+    front:  {
+      _: [0.0, 0.0], a: [0.5, 0.0], b: [1.0, 0.0],
+      c: [0.0, 0.5], d: [0.5, 0.5], e: [1.0, 0.5],
+      f: [0.0, 1.0], g: [0.5, 1.0], h: [1.0, 1.0]
+    },
+    back:   {
+      t: [0.0, 0.0], s: [0.5, 0.0], r: [1.0, 0.0],
+      w: [0.0, 0.5], v: [0.5, 0.5], u: [1.0, 0.5],
+      z: [0.0, 1.0], y: [0.5, 1.0], x: [1.0, 1.0]
+    },
+    left:   {
+      r: [0.0, 0.0], i: [0.5, 0.0], _: [1.0, 0.0],
+      u: [0.0, 0.5], l: [0.5, 0.5], c: [1.0, 0.5],
+      x: [0.0, 1.0], o: [0.5, 1.0], f: [1.0, 1.0]
+    },
+    right:  {
+      b: [0.0, 0.0], k: [0.5, 0.0], t: [1.0, 0.0],
+      e: [0.0, 0.5], n: [0.5, 0.5], w: [1.0, 0.5],
+      h: [0.0, 1.0], q: [0.5, 1.0], z: [1.0, 1.0]
+    },
+    top:    {
+      f: [0.0, 0.0], g: [0.5, 0.33], h: [1.0, 0.0],
+      o: [0.0, 0.5], p: [0.5, 0.5],  q: [1.0, 0.5],
+      x: [0.0, 1.0], y: [0.5, 1.0],  z: [1.0, 1.0]
+    },
+    bottom: { // ba_ kji tsr
+      b: [0.0, 0.0], a: [0.5, 0.0], _: [1.0, 0.0],
+      k: [0.0, 0.5], j: [0.5, 0.5], i: [1.0, 0.5],
+      t: [0.0, 1.0], s: [0.5, 1.0], r: [1.0, 1.0]
+    }
   }
 
   var alphabet = new Letters({
@@ -319,13 +341,14 @@ Number.prototype.toHex = function() {
   return result
 }
 
+/*
 Array.prototype.shuffle = function() {
   var o = this
 
   for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
 
   return o;
-}
+}*/
 
 function RGB(red, green, blue) {
   this.red = red; this.green = green; this.blue = blue;

@@ -36,7 +36,7 @@ chrome.browserAction.onClicked.addListener(function(tab) {
       var mapping = cube.toHex()
 
       function drawTexts(texts, ctx) {
-	// console.log("drawTexts.texts:", texts)
+	//console.log("drawTexts.texts:", texts)
 	for (var y in texts) {
 	  var text = texts[y].replace(/[^a-zA-Z ,]/g, '')
 	  //console.log("drawTexts.text:", text);
@@ -100,6 +100,7 @@ chrome.browserAction.onClicked.addListener(function(tab) {
       //*
       mapText(function(element) {
 	var texts = groupText(element.nodeValue, maxWords)
+        //console.log("mapText.texts", texts)
 
 	var maxText = texts.reduce(function(acc, text) {
           return Math.max(acc, text.length)
