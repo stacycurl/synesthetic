@@ -2,6 +2,7 @@ var assert = require('assert')
 var squares = require('./../cube-3d/squares').squares
 
 var RGB          = squares.RGB
+var Letter       = squares.Letter
 var ColourSquare = squares.ColourSquare
 var ColourCanvas = squares.ColourCanvas
 var ColourCube   = squares.ColourCube
@@ -128,6 +129,16 @@ describe('ColourCube', function() {
   })
 })
 
+describe('Letter', function() {
+  describe('#add', function() {
+    it('should add square to squares', function() {
+      var letter = new Letter('letter', 'rgb', ['initial', 'squares']).add('new square')
+
+      assert.deepEqual(letter.squares, ['initial', 'squares', 'new square'])
+    })
+  })
+})
+
 describe('LetterCube', function() {
   var lc = new LetterCube()
 
@@ -140,13 +151,13 @@ describe('LetterCube', function() {
 
   describe('letters', function() {
     it('should match expected colours', function() {
-      assert.deepEqual(lc.alphabet._, RGB.white)
-      assert.deepEqual(lc.alphabet.r, RGB.red)
-      assert.deepEqual(lc.alphabet.f, RGB.green)
-      assert.deepEqual(lc.alphabet.b, RGB.blue)
-      assert.deepEqual(lc.alphabet.i, RGB.white.interpolate(RGB.red, 0.5))
-      assert.deepEqual(lc.alphabet.c, RGB.white.interpolate(RGB.green, 0.5))
-      assert.deepEqual(lc.alphabet.a, RGB.white.interpolate(RGB.blue, 0.5))
+      assert.deepEqual(lc.alphabet._.rgb, RGB.white)
+      assert.deepEqual(lc.alphabet.r.rgb, RGB.red)
+      assert.deepEqual(lc.alphabet.f.rgb, RGB.green)
+      assert.deepEqual(lc.alphabet.b.rgb, RGB.blue)
+      assert.deepEqual(lc.alphabet.i.rgb, RGB.white.interpolate(RGB.red, 0.5))
+      assert.deepEqual(lc.alphabet.c.rgb, RGB.white.interpolate(RGB.green, 0.5))
+      assert.deepEqual(lc.alphabet.a.rgb, RGB.white.interpolate(RGB.blue, 0.5))
     })
   })
 

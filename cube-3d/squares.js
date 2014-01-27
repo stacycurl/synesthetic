@@ -17,6 +17,24 @@ Letters.prototype = {
   map: function(f) { return new Letters(this, f) }
 }
 
+function Letter(letter, rgb, squares) {
+  this.letter  = letter
+  this.rgb     = rgb
+  this.squares = squares || []
+}
+
+Letter.prototype = {
+  round: function(dp) {
+    return new Letter(this.letter, this.rgb.round(dp))
+  },
+  toHex: function() {
+    return this.rgb.toHex()
+  },
+  add: function(square) {
+    return new Letter(this.letter, this.rgb, this.squares.concat([square]))
+  }
+}
+
 function LetterCube(offsets0) {
   var offsets = offsets0 || {}
   var _ = RGB.white, b = RGB.blue,    f = RGB.green,  h = RGB.cyan
@@ -64,10 +82,7 @@ function LetterCube(offsets0) {
     }
   }
 
-  var alphabet = new Letters({
-    _: _, b: b, f: f, h: h, r: r, t: t, x: x, z: z,
-    m: RGB.white.interpolate(RGB.black, 0.5)
-  })
+  var alphabet = new Letters({ m: RGB.white.interpolate(RGB.black, 0.5) })
 
   cube.foreachFace(function(face) {
     var interpolationsForFace = interpolations[face.name]
@@ -77,7 +92,7 @@ function LetterCube(offsets0) {
       var percentages = offsetsForFace[letter] || interpolationsForFace[letter] 
 
       if (percentages != undefined) {
-        alphabet[letter] = face.colourAt(percentages[0], percentages[1])
+        alphabet[letter] = new Letter(letter, face.colourAt(percentages[0], percentages[1]))
       }
     })
   })
@@ -633,6 +648,7 @@ if (typeof module != 'undefined' && module.exports) module.exports.squares = {
   RGB: RGB,
   ColourSquare: ColourSquare,
   ColourCanvas: ColourCanvas,
-  ColourCube: ColourCube,
-  LetterCube: LetterCube
+  ColourCube:   ColourCube,
+  Letter:       Letter,
+  LetterCube:   LetterCube
 }
