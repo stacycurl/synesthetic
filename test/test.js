@@ -2,6 +2,7 @@ var assert = require('assert')
 var squares = require('./../cube-3d/squares').squares
 
 var RGB          = squares.RGB
+var Choice       = squares.Choice
 var Letter       = squares.Letter
 var ColourSquare = squares.ColourSquare
 var ColourCanvas = squares.ColourCanvas
@@ -131,6 +132,24 @@ describe('ColourCube', function() {
 
 describe('Letter', function() {
   describe('#add', function() {
+    it('should append choice', function() {
+      var choiceX = new Choice('face1', 'x', 'y')
+      var choiceY = new Choice('face2', 'x', 'y')
+
+      assert.deepEqual(new Letter('z', []).add(choiceX).choices, [choiceX])
+      assert.deepEqual(new Letter('z', [choiceX]).add(choiceY).choices, [choiceX, choiceY])
+    })
+  })
+
+  describe('#rgb', function() {
+    function choice(rgb) {
+      return {colour: function() { return rgb }}
+    }
+
+    it('should return colour of last choice', function() {
+      assert.deepEqual(new Letter('z', [choice(RGB.red)]).rgb(), RGB.red)
+      assert.deepEqual(new Letter('z', [choice(RGB.red), choice(RGB.blue)]).rgb(), RGB.blue)
+    })
   })
 })
 

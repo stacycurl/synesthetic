@@ -45,11 +45,11 @@ function Letter(letter, choices) {
 }
 
 Letter.prototype = {
-  add: function(square) {
-    return new Letter(this.letter, this.choices)
+  add: function(choice) {
+    return new Letter(this.letter, this.choices.concat([choice]))
   },
   rgb: function() {
-    return this.choices[0].colour()
+    return this.choices[this.choices.length - 1].colour()
   }
 }
 
@@ -676,5 +676,7 @@ if (typeof module != 'undefined' && module.exports) module.exports.squares = {
   ColourCanvas: ColourCanvas,
   ColourCube:   ColourCube,
   Letter:       Letter,
+  Letters:      Letters,
+  Choice:       Choice,
   LetterCube:   LetterCube
 }
