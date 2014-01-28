@@ -34,12 +34,6 @@ function Letter(letter, rgb, squares) {
 }
 
 Letter.prototype = {
-  round: function(dp) {
-    return new Letter(this.letter, this.rgb.round(dp))
-  },
-  toHex: function() {
-    return this.rgb.toHex()
-  },
   add: function(square) {
     return new Letter(this.letter, this.rgb, this.squares.concat([square]))
   }
@@ -114,7 +108,13 @@ function LetterCube(offsets0) {
 
 LetterCube.prototype = {
   toHex: function() {
-    return this.alphabet.map(function(rgb) { return rgb.round().toHex() })
+    return this.alphabet.map(function(rgb) {
+      if (rgb instanceof RGB) {
+        return rgb.round().toHex()
+      } else {
+        return rgb.rgb.round().toHex()
+      }
+    })
   }
 }
 
