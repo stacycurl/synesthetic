@@ -86,7 +86,9 @@ function LetterCube(offsets0) {
     }
   }
 
-  var alphabet = new Letters({ m: RGB.white.interpolate(RGB.black, 0.5) })
+  var alphabet = new Letters({
+    m: new Letter('m', RGB.white.interpolate(RGB.black, 0.5))
+  })
 
   cube.foreachFace(function(face) {
     var interpolationsForFace = interpolations[face.name]
@@ -108,12 +110,8 @@ function LetterCube(offsets0) {
 
 LetterCube.prototype = {
   toHex: function() {
-    return this.alphabet.map(function(rgb) {
-      if (rgb instanceof RGB) {
-        return rgb.round().toHex()
-      } else {
-        return rgb.rgb.round().toHex()
-      }
+    return this.alphabet.map(function(letter) {
+      return letter.rgb.round().toHex()
     })
   }
 }
