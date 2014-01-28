@@ -1,8 +1,8 @@
-function Letters(mapping, f) {
+function Letters(mapping) {
   var self = this
 
   this.foreach(function(letter) {
-    self[letter] = (f == undefined) ? mapping[letter] : f(mapping[letter])
+    self[letter] = mapping[letter]
   })
 }
 
@@ -14,7 +14,17 @@ Letters.prototype = {
       f(letters[l])
     }
   },
-  map: function(f) { return new Letters(this, f) }
+  map: function(f) {
+    var self = this
+
+    var result = new Letters({})
+
+    this.foreach(function(letter) {
+      result[letter] = f(self[letter])
+    })
+
+    return result
+  }
 }
 
 function Letter(letter, rgb, squares) {
