@@ -39,8 +39,7 @@ Letter.prototype = {
   }
 }
 
-function LetterCube(offsets0) {
-  var offsets = offsets0 || {}
+function LetterCube() {
   var _ = RGB.white, b = RGB.blue,    f = RGB.green,  h = RGB.cyan
   var r = RGB.red,   t = RGB.magenta, x = RGB.yellow, z = RGB.black
 
@@ -86,16 +85,17 @@ function LetterCube(offsets0) {
     }
   }
 
+  var grey = RGB.white.interpolate(RGB.black, 0.5).square().colourAt(0, 0)
+
   var alphabet = new Letters({
-    m: new Letter('m', RGB.white.interpolate(RGB.black, 0.5))
+    m: new Letter('m', grey)
   })
 
   cube.foreachFace(function(face) {
     var interpolationsForFace = interpolations[face.name]
-    var offsetsForFace        = offsets[face.name] || {}
 
     alphabet.foreach(function(letter) {
-      var percentages = offsetsForFace[letter] || interpolationsForFace[letter] 
+      var percentages = interpolationsForFace[letter] 
 
       if (percentages != undefined) {
         alphabet[letter] = new Letter(letter, face.colourAt(percentages[0], percentages[1]))
@@ -317,7 +317,7 @@ ColourSquare.prototype = {
     return new ColourSquare(this.rightTop, this.leftTop, this.rightBottom, this.leftBottom)
   },
   interpolate: function(other, percentage) {
-    return zipWith(other, function(from, to) { from.interpolate(to, percentage) })
+    return this.zipWith(other, function(from, to) { from.interpolate(to, percentage) })
   },
   colourAt: function(xPercent, yPercent) {
     var left  = this.leftBottom.interpolate(this.leftTop, yPercent)
@@ -394,6 +394,9 @@ RGB.prototype = {
     return this.zipWith(other, function(from, to) {
       return (from * (1 - percentage)) + (percentage * to)
     })
+  },
+  square: function() {
+    return new ColourSquare(this, this, this, this)
   },
   addTo: function(data, index) {
     data.data[index + 0] = this.red
