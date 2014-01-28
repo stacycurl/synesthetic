@@ -27,23 +27,21 @@ Letters.prototype = {
   }
 }
 
-function Letter(letter, rgb, squares) {
+function Letter(letter, face, x, y) {
   this.letter  = letter
-  this.rgb_     = rgb
-  this.squares = squares || []
+  this.face    = face
+  this.x       = x
+  this.y       = y
+  this.squares = []
 }
 
 Letter.prototype = {
   add: function(square) {
-    return new Letter(this.letter, this.rgb_, this.squares.concat([square]))
+    return new Letter(this.letter, this.face, this.x, this.y)
   },
   rgb: function() {
-    return this.rgb_
+    return this.face.colourAt(this.x, this.y)
   }
-}
-
-Letter.fromFace = function(letter, face, x, y) {
-  return new Letter(letter, face.colourAt(x, y))
 }
 
 function LetterCube() {
@@ -95,7 +93,7 @@ function LetterCube() {
   var grey = RGB.white.interpolate(RGB.black, 0.5).square()
 
   var alphabet = new Letters({
-    m: Letter.fromFace('m', grey, 0, 0)
+    m: new Letter('m', grey, 0, 0)
   })
 
   cube.foreachFace(function(face) {
@@ -105,7 +103,7 @@ function LetterCube() {
       var percentages = interpolationsForFace[letter] 
 
       if (percentages != undefined) {
-        alphabet[letter] = Letter.fromFace(letter, face, percentages[0], percentages[1])
+        alphabet[letter] = new Letter(letter, face, percentages[0], percentages[1])
       }
     })
   })

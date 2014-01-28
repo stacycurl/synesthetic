@@ -131,11 +131,6 @@ describe('ColourCube', function() {
 
 describe('Letter', function() {
   describe('#add', function() {
-    it('should add square to squares', function() {
-      var letter = new Letter('letter', 'rgb', ['initial', 'squares']).add('new square')
-
-      assert.deepEqual(letter.squares, ['initial', 'squares', 'new square'])
-    })
   })
 })
 
