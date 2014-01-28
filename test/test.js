@@ -151,13 +151,13 @@ describe('LetterCube', function() {
 
   describe('letters', function() {
     it('should match expected colours', function() {
-      assert.deepEqual(lc.alphabet._.rgb, RGB.white)
-      assert.deepEqual(lc.alphabet.r.rgb, RGB.red)
-      assert.deepEqual(lc.alphabet.f.rgb, RGB.green)
-      assert.deepEqual(lc.alphabet.b.rgb, RGB.blue)
-      assert.deepEqual(lc.alphabet.i.rgb, RGB.white.interpolate(RGB.red, 0.5))
-      assert.deepEqual(lc.alphabet.c.rgb, RGB.white.interpolate(RGB.green, 0.5))
-      assert.deepEqual(lc.alphabet.a.rgb, RGB.white.interpolate(RGB.blue, 0.5))
+      assert.deepEqual(lc.alphabet._.rgb(), RGB.white)
+      assert.deepEqual(lc.alphabet.r.rgb(), RGB.red)
+      assert.deepEqual(lc.alphabet.f.rgb(), RGB.green)
+      assert.deepEqual(lc.alphabet.b.rgb(), RGB.blue)
+      assert.deepEqual(lc.alphabet.i.rgb(), RGB.white.interpolate(RGB.red, 0.5))
+      assert.deepEqual(lc.alphabet.c.rgb(), RGB.white.interpolate(RGB.green, 0.5))
+      assert.deepEqual(lc.alphabet.a.rgb(), RGB.white.interpolate(RGB.blue, 0.5))
     })
   })
 
