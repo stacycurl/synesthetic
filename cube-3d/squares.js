@@ -92,17 +92,16 @@ function LetterCube() {
       o: [0.0, 0.5], p: [0.5, 0.5],  q: [1.0, 0.5],
       x: [0.0, 1.0], y: [0.5, 1.0],  z: [1.0, 1.0]
     },
-    bottom: { // ba_ kji tsr
+    bottom: {
       b: [0.0, 0.0], a: [0.5, 0.0], _: [1.0, 0.0],
       k: [0.0, 0.5], j: [0.5, 0.5], i: [1.0, 0.5],
       t: [0.0, 1.0], s: [0.5, 1.0], r: [1.0, 1.0]
     }
   }
 
-  var grey = RGB.white.interpolate(RGB.black, 0.5).square()
 
   var alphabet = new Letters({
-    m: new Letter('m', [new Choice(grey, 0, 0)])
+    m: new Letter('m', [new Choice(new ColourSquare(RGB.white, RGB.black, RGB.white, RGB.black), 0.5, 0)])
   })
 
   cube.foreachFace(function(face) {
@@ -409,9 +408,6 @@ RGB.prototype = {
     return this.zipWith(other, function(from, to) {
       return (from * (1 - percentage)) + (percentage * to)
     })
-  },
-  square: function() {
-    return new ColourSquare(this, this, this, this)
   },
   addTo: function(data, index) {
     data.data[index + 0] = this.red
