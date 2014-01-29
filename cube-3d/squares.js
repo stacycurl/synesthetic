@@ -41,7 +41,7 @@ Choice.prototype = {
 
 function Letter(letter, choices) {
   this.letter  = letter
-  this.choices = choices
+  this.choices = choices || []
 }
 
 Letter.prototype = {
@@ -111,8 +111,8 @@ function LetterCube() {
       var percentages = interpolationsForFace[letter] 
 
       if (percentages != undefined) {
-        var x = percentages[0], y = percentages[1]
-        alphabet[letter] = new Letter(letter, [new Choice(face, x, y)])
+        alphabet[letter] = (alphabet[letter] || new Letter(letter))
+	  .add(new Choice(face, percentages[0], percentages[1]))
       }
     })
   })
@@ -127,6 +127,9 @@ LetterCube.prototype = {
     return this.alphabet.map(function(letter) {
       return letter.rgb().round().toHex()
     })
+  },
+  choices: function() {
+    return this.alphabet
   }
 }
 
@@ -376,6 +379,10 @@ Number.prototype.toHex = function() {
   if (result.length < 2) result = '0' + result
 
   return result
+}
+
+Array.prototype.last = function() {
+  return this[this.length - 1]
 }
 
 /*

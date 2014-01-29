@@ -1,5 +1,6 @@
-var assert = require('assert')
 var squares = require('./../cube-3d/squares').squares
+var expect  = require('chai').use(require('chai-fuzzy')).expect
+
 
 var RGB          = squares.RGB
 var Choice       = squares.Choice
@@ -9,35 +10,44 @@ var ColourCanvas = squares.ColourCanvas
 var ColourCube   = squares.ColourCube
 var LetterCube   = squares.LetterCube
 
+
+describe('Array', function() {
+  describe('#last', function() {
+    it('should return the last item of an Array', function() {
+      expect([1, 2, 3].last()).to.equal(3)
+    })
+  })
+})
+
 describe('RGB', function() {
   describe('#describe', function() {
     it('should include all 3 components', function() {
-      assert.equal('RGB(255, 255, 255)', new RGB(255, 255, 255).describe())
+      expect(new RGB(255, 255, 255).describe()).to.be.like('RGB(255, 255, 255)')
     })
   })
 
   describe('#toHex', function() {
     it('should work with base colours', function() {
-      assert.equal('#000000', RGB.black.toHex(), 'black')
-      assert.equal('#ffffff', RGB.white.toHex(), 'white')
+      expect(RGB.black.toHex()).to.equal('#000000')
+      expect(RGB.white.toHex()).to.equal('#ffffff')
 
-      assert.equal('#ff0000', RGB.red.toHex(),   'red')
-      assert.equal('#0000ff', RGB.blue.toHex(),  'blue')
-      assert.equal('#00ff00', RGB.green.toHex(), 'green')
+      expect(RGB.red.toHex()).to.equal('#ff0000')
+      expect(RGB.blue.toHex()).to.equal('#0000ff')
+      expect(RGB.green.toHex()).to.equal('#00ff00')
 
-      assert.equal('#00ffff', RGB.cyan.toHex(),    'cyan')
-      assert.equal('#ff00ff', RGB.magenta.toHex(), 'magenta')
-      assert.equal('#ffff00', RGB.yellow.toHex(),  'yellow')
+      expect(RGB.cyan.toHex()).to.equal('#00ffff')
+      expect(RGB.magenta.toHex()).to.equal('#ff00ff')
+      expect(RGB.yellow.toHex()).to.equal('#ffff00')
     })
   })
 
   describe('#round', function() {
     it('should round each component to 0dp by default', function() {
-      assert.deepEqual(new RGB(2, 2, 3), new RGB(1.5, 2.2, 3.4).round())
+      expect(new RGB(1.5, 2.2, 3.4).round()).to.be.like(new RGB(2, 2, 3))
     })
 
     it('should round to arg-dp otherwise', function() {
-      assert.deepEqual(new RGB(2.2, 3.4, 4.5), new RGB(2.18, 3.41, 4.46).round(1))
+      expect(new RGB(2.18, 3.41, 4.46).round(1)).to.be.like(new RGB(2.2, 3.4, 4.5))
     })
   })
 
@@ -46,13 +56,12 @@ describe('RGB', function() {
       for (var repetitions = 0; repetitions < 10; ++repetitions) {
         var left = RGB.random(2), right = RGB.random(2)
 
-        assert.deepEqual(left, left.interpolate(right, 0).round(2))
+        expect(left.interpolate(right, 0).round(2)).to.be.like(left)
       }
     })
 
     it('should linerly interpolate between each component separately', function() {
-      assert.deepEqual(new RGB(128, 128, 128),
-        RGB.white.interpolate(RGB.black, 0.5).round())
+      expect(RGB.white.interpolate(RGB.black, 0.5).round()).to.be.like(new RGB(128, 128, 128))
     })
   })
 })
@@ -63,7 +72,7 @@ describe('ColourSquare', function() {
   describe('describe', function() {
     it('should include 4 corners', function() {
       
-      assert.deepEqual(s.describe(), {
+      expect(s.describe()).to.be.like({
         leftTop:     RGB.green.describe(),
         rightTop:    RGB.cyan.describe(),
         leftBottom:  RGB.white.describe(),
@@ -74,26 +83,26 @@ describe('ColourSquare', function() {
   })
 
   it('#left should return left corners', function() {
-    assert.deepEqual(s.left(), [s.leftTop, s.leftBottom])
+    expect(s.left()).to.be.like([s.leftTop, s.leftBottom])
   })
 
   it('#right should return right corners', function() {
-    assert.deepEqual(s.right(), [s.rightTop, s.rightBottom])
+    expect(s.right()).to.be.like([s.rightTop, s.rightBottom])
   })
 
   it('#top should return top corners', function() {
-    assert.deepEqual(s.top(), [s.leftTop, s.rightTop])
+    expect(s.top()).to.be.like([s.leftTop, s.rightTop])
   })
 
   it('#bottom should return bottom corners', function() {
-    assert.deepEqual(s.bottom(), [s.leftBottom, s.rightBottom])
+    expect(s.bottom()).to.be.like([s.leftBottom, s.rightBottom])
   })
 
   it('colourAt should return colour from left bottom corner', function() {
-    assert.deepEqual(s.colourAt(0, 0), s.leftBottom)
-    assert.deepEqual(s.colourAt(0, 1), s.leftTop)
-    assert.deepEqual(s.colourAt(1, 1), s.rightTop)
-    assert.deepEqual(s.colourAt(1, 0), s.rightBottom)
+    expect(s.colourAt(0, 0)).to.be.like(s.leftBottom)
+    expect(s.colourAt(0, 1)).to.be.like(s.leftTop)
+    expect(s.colourAt(1, 1)).to.be.like(s.rightTop)
+    expect(s.colourAt(1, 0)).to.be.like(s.rightBottom)
   })
 
   it('createCanvas should return ColourCanvas', function() {
@@ -106,10 +115,10 @@ describe('ColourCanvas', function() {
     var square = ColourSquare.random()
     var canvas = new ColourCanvas(size, square, false)
 
-    assert.deepEqual(canvas.colourAt(0,        0),        square.colourAt(0, 1))
-    assert.deepEqual(canvas.colourAt(size - 1, 0),        square.colourAt(1, 1))
-    assert.deepEqual(canvas.colourAt(size - 1, size - 1), square.colourAt(1, 0))
-    assert.deepEqual(canvas.colourAt(0,        size - 1), square.colourAt(0, 0))
+    expect(canvas.colourAt(0,        0)).to.be.like(square.colourAt(0, 1))
+    expect(canvas.colourAt(size - 1, 0)).to.be.like(square.colourAt(1, 1))
+    expect(canvas.colourAt(size - 1, size - 1)).to.be.like(square.colourAt(1, 0))
+    expect(canvas.colourAt(0,        size - 1)).to.be.like(square.colourAt(0, 0))
   })
 })
 
@@ -120,12 +129,12 @@ describe('ColourCube', function() {
 
   describe('faces', function() {
     it('should make sense', function() {
-      assert.deepEqual(cube.front.corners(),  "fh_b".split(""))
-      assert.deepEqual(cube.back.corners(),   "zxtr".split(""))
-      assert.deepEqual(cube.left.corners(),   "xfr_".split(""))
-      assert.deepEqual(cube.right.corners(),  "hzbt".split(""))
-      assert.deepEqual(cube.top.corners(),    "xzfh".split(""))
-      assert.deepEqual(cube.bottom.corners(), "trb_".split(""))
+      expect(cube.front.corners()).to.be.like("fh_b".split(""))
+      expect(cube.back.corners()).to.be.like("zxtr".split(""))
+      expect(cube.left.corners()).to.be.like("xfr_".split(""))
+      expect(cube.right.corners()).to.be.like("hzbt".split(""))
+      expect(cube.top.corners()).to.be.like("xzfh".split(""))
+      expect(cube.bottom.corners()).to.be.like("trb_".split(""))
     })
   })
 })
@@ -136,8 +145,8 @@ describe('Letter', function() {
       var choiceX = new Choice('face1', 'x', 'y')
       var choiceY = new Choice('face2', 'x', 'y')
 
-      assert.deepEqual(new Letter('z', []).add(choiceX).choices, [choiceX])
-      assert.deepEqual(new Letter('z', [choiceX]).add(choiceY).choices, [choiceX, choiceY])
+      expect(new Letter('z', []).add(choiceX).choices).to.be.like([choiceX])
+      expect(new Letter('z', [choiceX]).add(choiceY).choices).to.be.like([choiceX, choiceY])
     })
   })
 
@@ -147,8 +156,8 @@ describe('Letter', function() {
     }
 
     it('should return colour of last choice', function() {
-      assert.deepEqual(new Letter('z', [choice(RGB.red)]).rgb(), RGB.red)
-      assert.deepEqual(new Letter('z', [choice(RGB.red), choice(RGB.blue)]).rgb(), RGB.blue)
+      expect(new Letter('z', [choice(RGB.red)]).rgb()).to.be.like(RGB.red)
+      expect(new Letter('z', [choice(RGB.red), choice(RGB.blue)]).rgb()).to.be.like(RGB.blue)
     })
   })
 })
@@ -158,20 +167,20 @@ describe('LetterCube', function() {
 
   describe('corners', function() {
     it('should match expected colours', function() {
-      assert.deepEqual(lc.cube.front.corners(), [RGB.green, RGB.cyan, RGB.white, RGB.blue])
-      assert.deepEqual(lc.cube.back.corners(),  [RGB.black, RGB.yellow, RGB.magenta, RGB.red])
+      expect(lc.cube.front.corners()).to.be.like([RGB.green, RGB.cyan, RGB.white, RGB.blue])
+      expect(lc.cube.back.corners()).to.be.like([RGB.black, RGB.yellow, RGB.magenta, RGB.red])
     })
   })
 
   describe('letters', function() {
     it('should match expected colours', function() {
-      assert.deepEqual(lc.alphabet._.rgb(), RGB.white)
-      assert.deepEqual(lc.alphabet.r.rgb(), RGB.red)
-      assert.deepEqual(lc.alphabet.f.rgb(), RGB.green)
-      assert.deepEqual(lc.alphabet.b.rgb(), RGB.blue)
-      assert.deepEqual(lc.alphabet.i.rgb(), RGB.white.interpolate(RGB.red, 0.5))
-      assert.deepEqual(lc.alphabet.c.rgb(), RGB.white.interpolate(RGB.green, 0.5))
-      assert.deepEqual(lc.alphabet.a.rgb(), RGB.white.interpolate(RGB.blue, 0.5))
+      expect(lc.alphabet._.rgb()).to.be.like(RGB.white)
+      expect(lc.alphabet.r.rgb()).to.be.like(RGB.red)
+      expect(lc.alphabet.f.rgb()).to.be.like(RGB.green)
+      expect(lc.alphabet.b.rgb()).to.be.like(RGB.blue)
+      expect(lc.alphabet.i.rgb()).to.be.like(RGB.white.interpolate(RGB.red, 0.5))
+      expect(lc.alphabet.c.rgb()).to.be.like(RGB.white.interpolate(RGB.green, 0.5))
+      expect(lc.alphabet.a.rgb()).to.be.like(RGB.white.interpolate(RGB.blue, 0.5))
     })
   })
 
@@ -179,33 +188,42 @@ describe('LetterCube', function() {
     var actual = lc.toHex()
 
     it('should match expected colours', function() {
-      assert.equal(actual._, '#ffffff', '_')
-      assert.equal(actual.a, '#8080ff', 'a')
-      assert.equal(actual.b, '#0000ff', 'b')
-      assert.equal(actual.c, '#80ff80', 'c')
-      assert.equal(actual.d, '#40bfbf', 'd')
-      assert.equal(actual.e, '#0080ff', 'e')
-      assert.equal(actual.f, '#00ff00', 'f')
-      assert.equal(actual.g, '#2ad555', 'g')
-      assert.equal(actual.h, '#00ffff', 'h')
-      assert.equal(actual.i, '#ff8080', 'i')
-      assert.equal(actual.j, '#bf40bf', 'j')
-      assert.equal(actual.k, '#8000ff', 'k')
-      assert.equal(actual.l, '#bfbf40', 'l')
-      assert.equal(actual.m, '#808080', 'm')
-      assert.equal(actual.n, '#4040bf', 'n')
-      assert.equal(actual.o, '#80ff00', 'o')
-      assert.equal(actual.p, '#40bf40', 'p')
-      assert.equal(actual.q, '#008080', 'q')
-      assert.equal(actual.r, '#ff0000', 'r')
-      assert.equal(actual.s, '#ff0080', 's')
-      assert.equal(actual.t, '#ff00ff', 't')
-      assert.equal(actual.u, '#ff8000', 'u')
-      assert.equal(actual.v, '#bf4040', 'v')
-      assert.equal(actual.w, '#800080', 'w')
-      assert.equal(actual.x, '#ffff00', 'x')
-      assert.equal(actual.y, '#808000', 'y')
-      assert.equal(actual.z, '#000000', 'z')
+      expect(actual._).to.be.like('#ffffff')
+      expect(actual.a).to.be.like('#8080ff')
+      expect(actual.b).to.be.like('#0000ff')
+      expect(actual.c).to.be.like('#80ff80')
+      expect(actual.d).to.be.like('#40bfbf')
+      expect(actual.e).to.be.like('#0080ff')
+      expect(actual.f).to.be.like('#00ff00')
+      expect(actual.g).to.be.like('#2ad555')
+      expect(actual.h).to.be.like('#00ffff')
+      expect(actual.i).to.be.like('#ff8080')
+      expect(actual.j).to.be.like('#bf40bf')
+      expect(actual.k).to.be.like('#8000ff')
+      expect(actual.l).to.be.like('#bfbf40')
+      expect(actual.m).to.be.like('#808080')
+      expect(actual.n).to.be.like('#4040bf')
+      expect(actual.o).to.be.like('#80ff00')
+      expect(actual.p).to.be.like('#40bf40')
+      expect(actual.q).to.be.like('#008080')
+      expect(actual.r).to.be.like('#ff0000')
+      expect(actual.s).to.be.like('#ff0080')
+      expect(actual.t).to.be.like('#ff00ff')
+      expect(actual.u).to.be.like('#ff8000')
+      expect(actual.v).to.be.like('#bf4040')
+      expect(actual.w).to.be.like('#800080')
+      expect(actual.x).to.be.like('#ffff00')
+      expect(actual.y).to.be.like('#808000')
+      expect(actual.z).to.be.like('#000000')
+    })
+  })
+
+  describe('#choices', function() {
+    it('should do something', function() {
+      expect(lc.choices().a).to.be.like(new Letter('a', [
+        new Choice(lc.cube.front,  0.5, 0),
+        new Choice(lc.cube.bottom, 0.5, 0)
+      ]))
     })
   })
 })
