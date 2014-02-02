@@ -67,11 +67,11 @@ describe('RGB', function() {
 })
 
 describe('ColourSquare', function() {
-  var s = new ColourSquare(RGB.green, RGB.cyan, RGB.white, RGB.blue)    
+  var s = new ColourSquare(RGB.green, RGB.cyan, RGB.white, RGB.blue)
 
   describe('describe', function() {
     it('should include 4 corners', function() {
-      
+
       expect(s.describe()).to.be.like({
         leftTop:     RGB.green.describe(),
         rightTop:    RGB.cyan.describe(),

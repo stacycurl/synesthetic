@@ -108,11 +108,11 @@ function LetterCube() {
     var interpolationsForFace = interpolations[face.name]
 
     alphabet.foreach(function(letter) {
-      var percentages = interpolationsForFace[letter] 
+      var percentages = interpolationsForFace[letter]
 
       if (percentages != undefined) {
         alphabet[letter] = (alphabet[letter] || new Letter(letter))
-	  .add(new Choice(face, percentages[0], percentages[1]))
+          .add(new Choice(face, percentages[0], percentages[1]))
       }
     })
   })
@@ -263,7 +263,7 @@ ColourCanvas.prototype = {
 
     img.setAttribute('src', this.dataURL())
     img.setAttribute('style', "border: 1px solid")
-    
+
     return addAddListener(img, this)
   },
   dataURL: function() {
@@ -317,7 +317,7 @@ ColourSquare.prototype = {
     return new ColourSquare(
       this.colourAt(xStart, yStart), this.colourAt(xEnd, yStart),
       this.colourAt(xStart, yEnd),   this.colourAt(xEnd, yEnd)
-    ) 
+    )
   },
   rotate: function(amount) {
     var mod = (amount + 4) % 4

@@ -122,14 +122,6 @@
 
 <div id="experiment">
     <div id="cube">
-	    <!--
-      <img class="face one" src="face-one.png"/>
-      <img class="face two" src="face-two.png"/>
-      <img class="face three" src="face-three.png"/>
-      <img class="face four" src="face-four.png"/>
-      <img class="face five" src="face-five.png"/>
-      <img class="face six" src="face-six.png"/>
-      -->
           <table class="face top">
             <tr><td class="x">x</td><td class="y">y</td><td class="z"/>z</td></tr>
             <tr><td class="o">o</td><td class="p">p</td><td class="q"/>q</td></tr>
@@ -166,13 +158,13 @@
     <script type="text/javascript" src="squares.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
     <script>
-        
-var cube = new LetterCube()
+
+      var cube = new LetterCube()
 
 function setBackground(css, faceName, rotation) {
   // console.log(faceName, cube[faceName].leftTop)
 
-  document.querySelector(css).setAttribute("background", 
+  document.querySelector(css).setAttribute("background",
     cube.cube[faceName].dataURL(100))
 }
 
@@ -246,10 +238,10 @@ $('body').keydown(function(evt) {
 
         case 65: // a
 
-	    break;
+            break;
 
-	case 48: // 0
-	    break;
+        case 48: // 0
+            break;
     };
     document.getElementById('cube').style[prop] = "rotateX("+xAngle+"deg) rotateY("+yAngle+"deg)";
 });    </script>
