@@ -110,7 +110,7 @@ function LetterCube() {
     alphabet.foreach(function(letter) {
       var percentages = interpolationsForFace[letter]
 
-      if (percentages != undefined) {
+      if (percentages !== undefined) {
         alphabet[letter] = (alphabet[letter] || new Letter(letter))
           .add(new Choice(face, percentages[0], percentages[1]))
       }
@@ -134,20 +134,12 @@ LetterCube.prototype = {
 }
 
 function ColourCube(front, back) {
-  this._type = "ColourCube",
-  this.front = front.named('front')
-  this.back = back.named('back')
-  this.bottom = new ColourSquare(
-    back.leftBottom, back.rightBottom, front.rightBottom,  front.leftBottom, 'bottom'
-  )
-  this.left = new ColourSquare(
-    back.rightTop, front.leftTop, back.rightBottom, front.leftBottom, 'left'
-  )
-  this.right = new ColourSquare(
-    front.rightTop,back.leftTop, front.rightBottom, back.leftBottom, 'right'
-  )
-  this.top = new ColourSquare(back.rightTop, back.leftTop, front.leftTop, front.rightTop, 'top'
-  )
+  this.front  = front.named('front')
+  this.back   = back.named('back')
+  this.bottom = new ColourSquare(back.leftBottom,  back.rightBottom,  front.rightBottom,  front.leftBottom,  'bottom')
+  this.left   = new ColourSquare(back.rightTop,    front.leftTop,     back.rightBottom,   front.leftBottom,  'left'  )
+  this.right  = new ColourSquare(front.rightTop,   back.leftTop,      front.rightBottom,  back.leftBottom,   'right' )
+  this.top    = new ColourSquare(back.rightTop,    back.leftTop,      front.leftTop,      front.rightTop,    'top'   )
 }
 
 ColourCube.prototype = {
@@ -218,7 +210,7 @@ function ColourCanvas(size, square, create) {
   this.size   = size
   this.square = square
 
-  if ((create == undefined) || create) {
+  if ((create === undefined) || create) {
     var canvas = document.createElement('canvas')
     canvas.width          = size
     canvas.height         = size
@@ -322,7 +314,7 @@ ColourSquare.prototype = {
   rotate: function(amount) {
     var mod = (amount + 4) % 4
 
-    if (mod == 0) {
+    if (mod === 0) {
       return this
     } else {
       return new ColourSquare(
@@ -426,31 +418,13 @@ RGB.prototype = {
     return this.toXYZ().toCIELab().toCIELch()
   },
   toXYZ: function() {
-    var tmp_r = this.red / 255;
-    var tmp_g = this.green / 255;
-    var tmp_b = this.blue / 255;
-
-    if (tmp_r > 0.04045) {
-      tmp_r = Math.pow(((tmp_r + 0.055) / 1.055), 2.4);
-    } else {
-      tmp_r = tmp_r / 12.92;
+    function calc(i) {
+      return (i > 0.04045) ? (Math.pow(((i + 0.055) / 1.055), 2.4)) : (i / 12.92)
     }
 
-    if (tmp_g > 0.04045) {
-      tmp_g = Math.pow(((tmp_g + 0.055) / 1.055), 2.4);
-    } else {
-      tmp_g = tmp_g / 12.92;
-    }
-
-    if (tmp_b > 0.04045) {
-      tmp_b = Math.pow(((tmp_b + 0.055) / 1.055), 2.4);
-    } else {
-      tmp_b = tmp_b / 12.92;
-    }
-
-    tmp_r = tmp_r * 100;
-    tmp_g = tmp_g * 100;
-    tmp_b = tmp_b * 100;
+    var tmp_r = calc(this.red   / 255) * 100
+    var tmp_g = calc(this.green / 255) * 100
+    var tmp_b = calc(this.blue  / 255) * 100
 
     var x = tmp_r * 0.4124 + tmp_g * 0.3576 + tmp_b * 0.1805;
     var y = tmp_r * 0.2126 + tmp_g * 0.7152 + tmp_b * 0.0722;
@@ -467,16 +441,16 @@ RGB.prototype = {
   }
 }
 
-RGB.white   = new RGB(255, 255, 255),
-RGB.black   = new RGB(  0,   0,   0),
+RGB.white   = new RGB(255, 255, 255)
+RGB.black   = new RGB(  0,   0,   0)
 
-RGB.red     = new RGB(255,   0,   0),
-RGB.green   = new RGB(  0, 255,   0),
-RGB.blue    = new RGB(  0,   0, 255),
+RGB.red     = new RGB(255,   0,   0)
+RGB.green   = new RGB(  0, 255,   0)
+RGB.blue    = new RGB(  0,   0, 255)
 
-RGB.cyan    = new RGB(  0, 255, 255),
-RGB.magenta = new RGB(255,   0, 255),
-RGB.yellow  = new RGB(255, 255,   0),
+RGB.cyan    = new RGB(  0, 255, 255)
+RGB.magenta = new RGB(255,   0, 255)
+RGB.yellow  = new RGB(255, 255,   0)
 RGB.red     = new RGB(255,   0,   0)
 
 RGB.random = function(dp) {
@@ -499,38 +473,15 @@ function XYZ(x, y, z) {
 
 XYZ.prototype = {
   toCIELab: function() {
-    var Xn = 95.047;
-    var Yn = 100.000;
-    var Zn = 108.883;
-
-    var x = this.x / Xn;
-    var y = this.y / Yn;
-    var z = this.z / Zn;
-
-    if (x > 0.008856) {
-      x = Math.pow(x, 1 / 3);
-    } else {
-      x = (7.787 * x) + (16 / 116);
+    function calc(i) {
+      return (i > 0.008856) ? Math.pow(i, 1 / 3) : ((7.787 * i) + (16 / 116))
     }
 
-    if (y > 0.008856) {
-      y = Math.pow(y, 1 / 3);
-    } else {
-      y = (7.787 * y) + (16 / 116);
-    }
+    var x = calc(this.x /  95.047)
+    var y = calc(this.y / 100.000)
+    var z = calc(this.z / 108.883)
 
-    if (z > 0.008856) {
-      z = Math.pow(z, 1 / 3);
-    } else {
-      z = (7.787 * z) + (16 / 116);
-    }
-
-    if (y > 0.008856) {
-      var l = (116 * y) - 16;
-    } else {
-      var l = 903.3 * y;
-    }
-
+    var l = (y > 0.008856) ? ((116 * y) - 16) : (903.3 * y)
     var a = 500 * (x - y);
     var b = 200 * (y - z);
 
@@ -541,25 +492,13 @@ XYZ.prototype = {
     var var_Y = this.y / 100;
     var var_Z = this.z / 100;
 
-    var var_R = var_X * 3.2406 + var_Y * -1.5372 + var_Z * -0.4986;
-    var var_G = var_X * -0.9689 + var_Y * 1.8758 + var_Z * 0.0415;
-    var var_B = var_X * 0.0557 + var_Y * -0.2040 + var_Z * 1.0570;
+    function calc(i) {
+      return (i > 0.0031308) ? (1.055 * Math.pow(i, (1 / 2.4)) - 0.055) : (12.92 * i)
+    }
 
-    if (var_R > 0.0031308) {
-      var_R = 1.055 * Math.pow(var_R, (1 / 2.4)) - 0.055;
-    } else {
-      var_R = 12.92 * var_R;
-    }
-    if (var_G > 0.0031308) {
-      var_G = 1.055 * Math.pow(var_G, (1 / 2.4)) - 0.055;
-    } else {
-      var_G = 12.92 * var_G;
-    }
-    if (var_B > 0.0031308) {
-      var_B = 1.055 * Math.pow(var_B, (1 / 2.4)) - 0.055;
-    } else {
-      var_B = 12.92 * var_B;
-     }
+    var var_R = calc(var_X *  3.2406 + var_Y * -1.5372 + var_Z * -0.4986)
+    var var_G = calc(var_X * -0.9689 + var_Y *  1.8758 + var_Z *  0.0415)
+    var var_B = calc(var_X *  0.0557 + var_Y * -0.2040 + var_Z *  1.0570)
 
     function bound(v,l,h) {
       return Math.min(h, Math.max(l, v));
@@ -601,27 +540,17 @@ CIELab.prototype = {
     var ref_Y = 100.000;
     var ref_Z = 108.883;
 
-    var var_Y = (this.l + 16) / 116;
-    var var_X = this.a / 500 + var_Y;
-    var var_Z = var_Y - this.b / 200;
-
-    if (Math.pow(var_Y, 3) > 0.008856) {
-      var_Y = Math.pow(var_Y, 3);
-    } else {
-      var_Y = (var_Y - 16 / 116) / 7.787;
+    function calc(i) {
+      return (Math.pow(i, 3) > 0.008856) ? Math.pow(i, 3) : ((i - 16 / 116) / 7.787)
     }
 
-    if (Math.pow(var_X, 3) > 0.008856) {
-      var_X = Math.pow(var_X, 3);
-    } else {
-      var_X = (var_X - 16 / 116) / 7.787;
-    }
+    var var_Y = (this.l + 16) / 116
+    var var_X = this.a / 500 + var_Y
+    var var_Z = var_Y - this.b / 200
 
-    if (Math.pow(var_Z, 3) > 0.008856) {
-      var_Z = Math.pow(var_Z, 3);
-    } else {
-      var_Z = (var_Z - 16 / 116) / 7.787;
-    }
+    var_X = calc(var_X)
+    var_Y = calc(var_Y)
+    var_Z = calc(var_Z)
 
     return new XYZ(ref_X * var_X, ref_Y * var_Y, ref_Z * var_Z)
   }
@@ -667,7 +596,7 @@ CIELch.prototype = {
 
     var l = fromColor.l + (toColor.l - fromColor.l) * percentage
     var c = fromColor.c + (toColor.c - fromColor.c) * percentage
-    var h = fromH + (toH - fromH) * percentage
+    var h = fromH       + (toH       - fromH      ) * percentage
 
     return new CIELch(l, c, h)
   }
