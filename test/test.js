@@ -227,3 +227,24 @@ describe('LetterCube', function() {
     })
   })
 })
+
+describe('Choice', function() {
+  describe('selection', function() {
+    it('should contain portion of face', function() {
+      function check(x, y, xstart, xend, ystart, yend) {
+        var face = {
+          squareAt: function(xStart, xEnd, yStart, yEnd) {
+            return [xStart, xEnd, yStart, yEnd]
+          }
+        }
+
+        expect(new Choice(face, x, y).selection()).to.be.like(
+          face.squareAt(xstart, xend, ystart, yend))
+      }
+
+      check(0,    0,    0,     0.33,  0,     0.33)
+      check(0.5,  0.5,  0.33,  0.66,  0.33,  0.66)
+      check(1,    1,    0.66,  1,     0.66,  1   )
+    })
+  })
+})

@@ -36,6 +36,18 @@ function Choice(face, x, y) {
 Choice.prototype = {
   colour: function() {
     return this.face.colourAt(this.x, this.y)
+  },
+  selection: function() {
+    function min(i) {
+      return (i < 0.33) ? 0 : (i < 0.66) ? 0.33 : 0.66
+    }
+
+    function max(i) {
+      return (i > 0.66) ? 1 : (i > 0.33) ? 0.66 : 0.33
+    }
+
+    return this.face.squareAt(
+      min(this.x), max(this.x), min(this.y), max(this.y))
   }
 }
 
@@ -61,6 +73,7 @@ function LetterCube() {
     new ColourSquare(f, h, _, b),
     new ColourSquare(z, x, t, r)
   )
+
   var rgb = new ColourCube(
     new ColourSquare(f, h, z, b),
     new ColourSquare(_, x, t, r)
