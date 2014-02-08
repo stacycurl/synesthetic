@@ -11,7 +11,7 @@ Letters.prototype = {
     var letters = "_abcdefghijklmnopqrstuvwxyz"
 
     for (var l = 0; l < letters.length; ++l) {
-      f(letters[l])
+      f(letters[l], this[letters[l]])
     }
   },
   map: function(f) {
@@ -19,8 +19,8 @@ Letters.prototype = {
 
     var result = new Letters({})
 
-    this.foreach(function(letter) {
-      result[letter] = f(self[letter])
+    this.foreach(function(letter, value) {
+      result[letter] = f(letter, value)
     })
 
     return result
@@ -29,39 +29,108 @@ Letters.prototype = {
 
 function Choice(face, x, y) {
   this.face = face
-  this.x    = x
-  this.y    = y
+  this.x    = new Percent(x)
+  this.y    = new Percent(y)
 }
 
 Choice.prototype = {
   colour: function() {
-    return this.face.colourAt(this.x, this.y)
+    return this.face.colourAt(this.x, this.y).round()
   },
   selection: function() {
     function min(i) {
-      return (i < 0.33) ? 0 : (i < 0.66) ? 0.33 : 0.66
+      return new Percent((i < 0.33) ? 0 : (i < 0.66) ? 0.33 : 0.66)
     }
 
     function max(i) {
-      return (i > 0.66) ? 1 : (i > 0.33) ? 0.66 : 0.33
+      return new Percent((i > 0.66) ? 1 : (i > 0.33) ? 0.66 : 0.33)
     }
 
+    return this.face
     return this.face.squareAt(
-      min(this.x), max(this.x), min(this.y), max(this.y))
+      min(this.x.percent), max(this.x.percent), min(this.y.percent), max(this.y.percent))
+  },
+  choiceElements: function(listener) {
+    var img = this.selection().img(100, function(x, y, rgb) {
+      this.x = x
+      this.y = y
+      listener(rgb)
+    })
+
+    return img
   }
 }
 
-function Letter(letter, choices) {
+function Letter(letter, initial, choices) {
   this.letter  = letter
+  this.initial = initial
   this.choices = choices || []
 }
 
 Letter.prototype = {
   add: function(choice) {
-    return new Letter(this.letter, this.choices.concat([choice]))
+    return new Letter(this.letter, this.initial, this.choices.concat([choice]))
   },
-  rgb: function() {
-    return this.choices[this.choices.length - 1].colour()
+  rgb: function(index) {
+    return this.choices[index || this.choices.length - 1].colour()
+  },
+  choiceElements: function(listener) {
+    // console.group('Letter.' + this.letter)
+
+    var tr = document.createElement('tr')
+    var td = document.createElement('td')
+    td.appendChild(document.createTextNode(this.letter))
+    tr.appendChild(td)
+    td = document.createElement('td')
+
+    this.choices.foreach(function(choice) {
+      td.appendChild(choice.choiceElements(function(rgb) {
+        listener(rgb)
+        // dd.appendChild(new ColourSquare(rgb, rgb, rgb, rgb).img(10))
+      }))
+
+      tr.appendChild(td)
+    })
+
+    function createLetterSpan(self, solid) {
+      function createSpan(letter) {
+        var result = document.createElement('span')
+        result.setAttribute('class', letter)
+        result.setAttribute('solid', solid)
+        result.appendChild(document.createTextNode(letter))
+        return result
+      }
+
+      var text = ''
+      var span = document.createElement('span')
+
+      new Letters({}).foreach(function(letter) {
+        span.appendChild(document.createTextNode(' '))
+        if (self.letter == letter) {
+          span.appendChild(document.createTextNode('\u00A0'))
+        } else {
+          span.appendChild(createSpan(self.letter))
+          span.appendChild(createSpan(letter))
+        }
+        //text = text + ' ' + self.letter + letter
+      })
+
+      return span
+    }
+
+    td = document.createElement('td')
+    var def = document.createElement('span')
+    def.setAttribute('class', 'def-' + this.letter)
+    td.appendChild(def)
+    td.appendChild(document.createElement('br'))
+    td.appendChild(createLetterSpan(this, false))
+    td.appendChild(document.createElement('br'))
+    td.appendChild(createLetterSpan(this, true))
+
+    tr.appendChild(td)
+
+    // console.groupEnd()
+    return tr
   }
 }
 
@@ -112,9 +181,39 @@ function LetterCube() {
     }
   }
 
+  var initial = {
+    _: RGB.fromHex('#ffffff'),
+    a: RGB.fromHex('#e3e6fd'),
+    b: RGB.fromHex('#0000ff'),
+    c: RGB.fromHex('#d1fbd7'),
+    d: RGB.fromHex('#40bfbf'),
+    e: RGB.fromHex('#0080ff'),
+    f: RGB.fromHex('#00ff00'),
+    g: RGB.fromHex('#2ad555'),
+    h: RGB.fromHex('#00ffff'),
+    i: RGB.fromHex('#ffe5e5'),
+    j: RGB.fromHex('#bf40bf'),
+    k: RGB.fromHex('#8000ff'),
+    l: RGB.fromHex('#bfbf40'),
+    m: RGB.fromHex('#808080'),
+    n: RGB.fromHex('#512899'),
+    o: RGB.fromHex('#e3ff00'),
+    p: RGB.fromHex('#40bf40'),
+    q: RGB.fromHex('#008080'),
+    r: RGB.fromHex('#ff0000'),
+    s: RGB.fromHex('#e51e5c'),
+    t: RGB.fromHex('#ff00ff'),
+    u: RGB.fromHex('#ff8000'),
+    v: RGB.fromHex('#bf4040'),
+    w: RGB.fromHex('#800080'),
+    x: RGB.fromHex('#ffff00'),
+    y: RGB.fromHex('#808000'),
+    z: RGB.fromHex('#000000')
+  }
+
 
   var alphabet = new Letters({
-    m: new Letter('m', [new Choice(new ColourSquare(RGB.white, RGB.black, RGB.white, RGB.black), 0.5, 0)])
+    m: new Letter('m', initial['m'], [new Choice(new ColourSquare(RGB.white, RGB.black, RGB.white, RGB.black), 0.5, 0)])
   })
 
   cube.foreachFace(function(face) {
@@ -124,7 +223,7 @@ function LetterCube() {
       var percentages = interpolationsForFace[letter]
 
       if (percentages !== undefined) {
-        alphabet[letter] = (alphabet[letter] || new Letter(letter))
+        alphabet[letter] = (alphabet[letter] || new Letter(letter, initial[letter]))
           .add(new Choice(face, percentages[0], percentages[1]))
       }
     })
@@ -137,12 +236,40 @@ function LetterCube() {
 
 LetterCube.prototype = {
   toHex: function() {
-    return this.alphabet.map(function(letter) {
+    return this.alphabet.map(function(_, letter) {
       return letter.rgb().round().toHex()
     })
   },
-  choices: function() {
-    return this.alphabet
+  choiceElements: function(listener) {
+    var table = document.createElement('table')
+
+    this.alphabet.foreach(function(letter, value) {
+      table.appendChild(value.choiceElements(function(rgb) {
+        listener(letter, rgb)
+      }))
+    })
+
+    var text = "var initial = {\n"
+
+    this.alphabet.foreach(function(letter, value) {
+      text = text + "  " + letter + ": RGB.fromHex('" + value.initial.toHex() + "'),\n"
+    })
+
+    text = text + "}"
+    var pre = document.createElement('pre')
+    pre.appendChild(document.createTextNode(text))
+
+    return new Array(table, pre)
+  },
+  initial: function(listener) {
+    return this.alphabet.map(function(letter, value) {
+      // console.log(letter, value)
+      if (listener !== undefined) {
+        listener(letter, value.initial)
+      }
+
+      return value.initial.toHex()
+    })
   }
 }
 
@@ -178,15 +305,14 @@ ColourCube.prototype = {
     f(this.front); f(this.back); f(this.left); f(this.right); f(this.top); f(this.bottom)
   },
   drawUnfolded: function(element, size) {
+    // console.group('drawUnfolded')
+
     var squares = [this.front, this.right, this.back, this.left]
+
     function append(face) {
-      var img = face.img(size)
-
-      img.addListener(function(rgb) {
+      element.appendChild(face.img(size, function(x, y, rgb) {
         element.appendChild(new ColourSquare(rgb, rgb, rgb, rgb).img(10))
-      })
-
-      element.appendChild(img)
+      }))
     }
 
     append(this.top)
@@ -198,6 +324,8 @@ ColourCube.prototype = {
 
     element.appendChild(document.createElement("br"))
     append(this.bottom.rotate(2))
+
+    // console.groupEnd('drawUnfolded')
   },
   shuffle: function() {
     var colours = this.corners().shuffle()
@@ -236,7 +364,7 @@ function ColourCanvas(size, square, create) {
 
     for (var y = 0; y < size; ++y) {
       for (var x = 0; x < size; ++x) {
-        var interpolated = square.colourAt(x / (size - 1), y / (size - 1))
+        var interpolated = square.colourAt(new Percent(x / (size - 1)), new Percent(y / (size - 1)))
         var index        = (x + ((size - 1) - y) * size) * 4
 
         interpolated.addTo(data, index)
@@ -255,21 +383,33 @@ function ColourCanvas(size, square, create) {
 
 ColourCanvas.prototype = {
   colourAt: function(x, y) {
+    // console.log("colourAt", x, y)
+    if (x < 0 || x > this.size || y < 0 || y > this.size) {
+      throw "Invalid parameters to colourAt: " + [x, y] + ", size = " + this.size
+    }
+
     return this.square.colourAt(this.xPercent(x), this.yPercent(y))
   },
   xPercent: function(x) {
-    return x / (this.size - 1)
+    return new Percent(x / (this.size - 1))
   },
   yPercent: function(y) {
-    return ((this.size - 1) - y) / (this.size - 1)
+    return new Percent(((this.size - 1) - y) / (this.size - 1))
   },
-  img: function() {
+  img: function(listener) {
+    // console.log('ColourCanvas.img', this.size, this.square, listener)
     var img = document.createElement('img')
 
     img.setAttribute('src', this.dataURL())
     img.setAttribute('style', "border: 1px solid")
 
-    return addAddListener(img, this)
+    var result = addAddListener(img, this)
+
+    if (listener !== undefined) {
+      result.addListener(listener)
+    }
+
+    return result
   },
   dataURL: function() {
     return this.canvas.toDataURL('image/png')
@@ -277,17 +417,22 @@ ColourCanvas.prototype = {
 }
 
 function addAddListener(element, canvas) {
-  function getX(event) {
-    return (event.pageX || (event.clientX + canvas.xOffset)) - element.offsetLeft
-  }
-
-  function getY(event) {
-    return (event.pageY || (event.clientY + canvas.yOffset)) - element.offsetTop
-  }
-
   element.addListener = function(listener) {
+    var capture = false
+
     element.addEventListener('click', function(event) {
-      listener(canvas.colourAt(getX(event), getY(event)))
+      capture = !capture
+      var x = event.offsetX, y = event.offsetY
+
+      listener(x, y, canvas.colourAt(x, y).round())
+    })
+
+    element.addEventListener('mousemove', function(event) {
+      if (capture) {
+        var x = event.offsetX, y = event.offsetY
+
+        listener(x, y, canvas.colourAt(x, y).round())
+      }
     })
   }
 
@@ -319,6 +464,12 @@ ColourSquare.prototype = {
     return this.map(function (corner) { return corner.round() })
   },
   squareAt: function(xStart, xEnd, yStart, yEnd) {
+    if (xStart < 0 || xStart > 1.0 || xEnd < 0 || xEnd > 1.0 ||
+        yStart < 0 || yStart > 1.0 || yEnd < 0 || yEnd > 1.0) {
+
+      throw "squareAt(" + [xStart, xEnd, yStart, yEnd].join(", ") + ") is invalid"
+    }
+
     return new ColourSquare(
       this.colourAt(xStart, yStart), this.colourAt(xEnd, yStart),
       this.colourAt(xStart, yEnd),   this.colourAt(xEnd, yEnd)
@@ -347,8 +498,8 @@ ColourSquare.prototype = {
 
     return left.interpolate(right, xPercent)
   },
-  img: function(size) {
-    return this.createCanvas(size).img()
+  img: function(size, listener) {
+    return this.createCanvas(size).img(listener)
   },
   dataURL: function(size) {
     return this.createCanvas(size).dataURL()
@@ -390,6 +541,33 @@ Array.prototype.last = function() {
   return this[this.length - 1]
 }
 
+Array.prototype.foreach = function(f) {
+  for (var i = 0; i < this.length; ++i) {
+    f(this[i])
+  }
+}
+
+function Percent(percent) {
+  if (percent instanceof Percent) {
+    this.percent = percent.percent
+  } else {
+    this.percent = percent
+  }
+
+  if (percent < 0 || percent > 1.0) {
+    throw "Invalid Percent: " + percent
+  }
+}
+
+Percent.prototype = {
+  interpolate: function(from, to) {
+    return (from * (1 - this.percent)) + (this.percent * to)
+  }
+}
+
+Percent.one  = new Percent(1)
+Percent.zero = new Percent(0)
+
 /*
 Array.prototype.shuffle = function() {
   var o = this
@@ -401,6 +579,10 @@ Array.prototype.shuffle = function() {
 
 function RGB(red, green, blue) {
   this.red = red; this.green = green; this.blue = blue;
+
+  if (red < 0 || red > 256 || green < 0 || green > 256 || blue < 0 || blue > 256) {
+    throw "Invalid RGB: " + [red, green, blue]
+  }
 }
 
 RGB.prototype = {
@@ -418,7 +600,7 @@ RGB.prototype = {
   interpolate: function(other, percentage, conversion) {
     // return this.toCIELch().interpolate(other.toCIELch(), percentage).toRGB()
     return this.zipWith(other, function(from, to) {
-      return (from * (1 - percentage)) + (percentage * to)
+      return percentage.interpolate(from, to)
     })
   },
   addTo: function(data, index) {
@@ -452,6 +634,16 @@ RGB.prototype = {
     return new RGB(
       f(this.red, other.red), f(this.green, other.green), f(this.blue, other.blue))
   }
+}
+
+RGB.fromHex = function(hex) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+
+  return new RGB(
+    parseInt(result[1], 16),
+    parseInt(result[2], 16),
+    parseInt(result[3], 16)
+  )
 }
 
 RGB.white   = new RGB(255, 255, 255)
@@ -617,6 +809,7 @@ CIELch.prototype = {
 
 if (typeof module != 'undefined' && module.exports) module.exports.squares = {
   RGB: RGB,
+  Percent: Percent,
   ColourSquare: ColourSquare,
   ColourCanvas: ColourCanvas,
   ColourCube:   ColourCube,

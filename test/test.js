@@ -3,8 +3,10 @@ var expect  = require('chai').use(require('chai-fuzzy')).expect
 
 
 var RGB          = squares.RGB
+var Percent      = squares.Percent
 var Choice       = squares.Choice
 var Letter       = squares.Letter
+var Letters      = squares.Letters
 var ColourSquare = squares.ColourSquare
 var ColourCanvas = squares.ColourCanvas
 var ColourCube   = squares.ColourCube
@@ -56,12 +58,12 @@ describe('RGB', function() {
       for (var repetitions = 0; repetitions < 10; ++repetitions) {
         var left = RGB.random(2), right = RGB.random(2)
 
-        expect(left.interpolate(right, 0).round(2)).to.be.like(left)
+        expect(left.interpolate(right, Percent.zero).round(2)).to.be.like(left)
       }
     })
 
     it('should linerly interpolate between each component separately', function() {
-      expect(RGB.white.interpolate(RGB.black, 0.5).round()).to.be.like(new RGB(128, 128, 128))
+      expect(RGB.white.interpolate(RGB.black, new Percent(0.5)).round()).to.be.like(new RGB(128, 128, 128))
     })
   })
 })
@@ -99,10 +101,10 @@ describe('ColourSquare', function() {
   })
 
   it('colourAt should return colour from left bottom corner', function() {
-    expect(s.colourAt(0, 0)).to.be.like(s.leftBottom)
-    expect(s.colourAt(0, 1)).to.be.like(s.leftTop)
-    expect(s.colourAt(1, 1)).to.be.like(s.rightTop)
-    expect(s.colourAt(1, 0)).to.be.like(s.rightBottom)
+    expect(s.colourAt(Percent.zero, Percent.zero)).to.be.like(s.leftBottom)
+    expect(s.colourAt(Percent.zero, Percent.one)).to.be.like(s.leftTop)
+    expect(s.colourAt(Percent.one, Percent.one)).to.be.like(s.rightTop)
+    expect(s.colourAt(Percent.one, Percent.zero)).to.be.like(s.rightBottom)
   })
 
   it('createCanvas should return ColourCanvas', function() {
@@ -115,10 +117,10 @@ describe('ColourCanvas', function() {
     var square = ColourSquare.random()
     var canvas = new ColourCanvas(size, square, false)
 
-    expect(canvas.colourAt(0,        0)).to.be.like(square.colourAt(0, 1))
-    expect(canvas.colourAt(size - 1, 0)).to.be.like(square.colourAt(1, 1))
-    expect(canvas.colourAt(size - 1, size - 1)).to.be.like(square.colourAt(1, 0))
-    expect(canvas.colourAt(0,        size - 1)).to.be.like(square.colourAt(0, 0))
+    expect(canvas.colourAt(0,        0)).to.be.like(square.colourAt(Percent.zero, Percent.one))
+    expect(canvas.colourAt(size - 1, 0)).to.be.like(square.colourAt(Percent.one, Percent.one))
+    expect(canvas.colourAt(size - 1, size - 1)).to.be.like(square.colourAt(Percent.one, Percent.zero))
+    expect(canvas.colourAt(0,        size - 1)).to.be.like(square.colourAt(Percent.zero, Percent.zero))
   })
 })
 
@@ -135,6 +137,33 @@ describe('ColourCube', function() {
       expect(cube.right.corners()).to.be.like("hzbt".split(""))
       expect(cube.top.corners()).to.be.like("xzfh".split(""))
       expect(cube.bottom.corners()).to.be.like("trb_".split(""))
+    })
+  })
+})
+
+describe('Letters', function() {
+  describe('<>', function() {
+    it('should assign values of letters in mapping to this', function() {
+      var letters = new Letters({a: 1, aa: 2})
+
+      expect(letters.a).to.be.like(1)
+      expect(letters.aa).to.be.like(undefined)
+    })
+  })
+
+  describe('foreach', function() {
+    it('should provide each letter & value', function() {
+      var visited = []
+
+      var letters = new Letters({a: 1, b: 2, c: 3})
+
+      letters.foreach(function(letter, value) {
+        if (value !== undefined) {
+          visited.push([letter, value])
+        }
+      })
+
+      expect(visited).to.be.like([['a', 1], ['b', 2], ['c', 3]])
     })
   })
 })
@@ -178,9 +207,9 @@ describe('LetterCube', function() {
       expect(lc.alphabet.r.rgb()).to.be.like(RGB.red)
       expect(lc.alphabet.f.rgb()).to.be.like(RGB.green)
       expect(lc.alphabet.b.rgb()).to.be.like(RGB.blue)
-      expect(lc.alphabet.i.rgb()).to.be.like(RGB.white.interpolate(RGB.red, 0.5))
-      expect(lc.alphabet.c.rgb()).to.be.like(RGB.white.interpolate(RGB.green, 0.5))
-      expect(lc.alphabet.a.rgb()).to.be.like(RGB.white.interpolate(RGB.blue, 0.5))
+      expect(lc.alphabet.i.rgb()).to.be.like(RGB.white.interpolate(RGB.red, new Percent(0.5)))
+      expect(lc.alphabet.c.rgb()).to.be.like(RGB.white.interpolate(RGB.green, new Percent(0.5)))
+      expect(lc.alphabet.a.rgb()).to.be.like(RGB.white.interpolate(RGB.blue, new Percent(0.5)))
     })
   })
 
@@ -218,9 +247,9 @@ describe('LetterCube', function() {
     })
   })
 
-  describe('#choices', function() {
+  describe('#alphabet', function() {
     it('should do something', function() {
-      expect(lc.choices().a).to.be.like(new Letter('a', [
+      expect(lc.alphabet.a).to.be.like(new Letter('a', [
         new Choice(lc.cube.front,  0.5, 0),
         new Choice(lc.cube.bottom, 0.5, 0)
       ]))
@@ -234,7 +263,7 @@ describe('Choice', function() {
       function check(x, y, xstart, xend, ystart, yend) {
         var face = {
           squareAt: function(xStart, xEnd, yStart, yEnd) {
-            return [xStart, xEnd, yStart, yEnd]
+            return [new Percent(xStart), new Percent(xEnd), new Percent(yStart), new Percent(yEnd)]
           }
         }
 
