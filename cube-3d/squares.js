@@ -213,7 +213,7 @@ function LetterCube() {
 
 
   var alphabet = new Letters({
-    m: new Letter('m', initial['m'], [new Choice(new ColourSquare(RGB.white, RGB.black, RGB.white, RGB.black), 0.5, 0)])
+    m: new Letter('m', initial.m, [new Choice(new ColourSquare(RGB.white, RGB.black, RGB.white, RGB.black), 0.5, 0)])
   })
 
   cube.foreachFace(function(face) {
@@ -376,7 +376,7 @@ function ColourCanvas(size, square, create) {
     this.xOffset = document.body.scrollLeft + document.documentElement.scrollLeft
     this.yOffset = document.body.scrollTop  + document.documentElement.scrollTop
 
-    addAddListener(canvas, this)
+    this.addAddListener(canvas)
     this.canvas  = canvas
   }
 }
@@ -403,7 +403,7 @@ ColourCanvas.prototype = {
     img.setAttribute('src', this.dataURL())
     img.setAttribute('style', "border: 1px solid")
 
-    var result = addAddListener(img, this)
+    var result = this.addAddListener(img)
 
     if (listener !== undefined) {
       result.addListener(listener)
@@ -413,31 +413,32 @@ ColourCanvas.prototype = {
   },
   dataURL: function() {
     return this.canvas.toDataURL('image/png')
-  }
-}
+  },
+  addAddListener: function(element) {
+    var canvas = this
+    element.addListener = function(listener) {
+      var capture = false
 
-function addAddListener(element, canvas) {
-  element.addListener = function(listener) {
-    var capture = false
-
-    element.addEventListener('click', function(event) {
-      capture = !capture
-      var x = event.offsetX, y = event.offsetY
-
-      listener(x, y, canvas.colourAt(x, y).round())
-    })
-
-    element.addEventListener('mousemove', function(event) {
-      if (capture) {
+      element.addEventListener('click', function(event) {
+        capture = !capture
         var x = event.offsetX, y = event.offsetY
 
         listener(x, y, canvas.colourAt(x, y).round())
-      }
-    })
-  }
+      })
 
-  return element
+      element.addEventListener('mousemove', function(event) {
+        if (capture) {
+          var x = event.offsetX, y = event.offsetY
+
+          listener(x, y, canvas.colourAt(x, y).round())
+        }
+      })
+    }
+
+    return element
+  }
 }
+
 
 
 function ColourSquare(leftTop, rightTop, leftBottom, rightBottom, name) {
@@ -780,11 +781,11 @@ CIELch.prototype = {
     return this.toCIELab().toXYZ().toRGB()
   },
   interpolate: function(other, percentage) {
-    fromColor = this
-    toColor = other
-    steps = 5;
+    var fromColor = this
+    var toColor = other
+    var steps = 5;
 
-    numSteps = steps;
+    var numSteps = steps;
 
     var toH = toColor.h
     var fromH = fromColor.h
@@ -817,6 +818,121 @@ Options.prototype = {
   },
   setSolid: function(value, callback) {
     chrome.storage.sync.set({'solid': value}, callback)
+  }
+}
+
+function Substitutor(solid) {
+  var cube = new LetterCube({})
+
+  this.mapping = cube.initial() // toHex()
+  this.solid = solid
+  this.xsize = 5;
+  this.ysize = 5;
+  this.maxWords = 13
+  this.gap = this.ysize
+  this.letterHeight = this.ysize
+  this.spaces = " "
+}
+
+Substitutor.prototype = {
+  mapText: function(update) {
+    function recurse(element) {
+      if (element.childNodes.length > 0) {
+        for (var i = 0; i < element.childNodes.length; i++) {
+          recurse(element.childNodes[i]);
+        }
+      }
+
+      if (element.nodeType == Node.TEXT_NODE && /\S/.test(element.nodeValue)) {
+        element.parentNode.replaceChild(update(element), element);
+      }
+    }
+
+    recurse(document.getElementsByTagName('html')[0]);
+  },
+  drawTexts: function(texts, ctx) {
+    // console.log("drawTexts.texts:", texts)
+    for (var y = 0; y < texts.length; y++) {
+      var text = texts[y].replace(/[^a-zA-Z ,]/g, '')
+      // console.log("drawTexts.text:", text);
+
+      for (var x in text) {
+        this.draw(text[x], x, y, ctx)
+      }
+    }
+  },
+  draw: function(letter, xoffset, yoffset, ctx) {
+    // console.log("draw.letter:", [letter, xoffset, yoffset]);
+    var mapped = this.mapping[letter];
+    // console.log('mapped', letter, mapped)
+
+    if (mapped !== undefined) {
+      this.drawRect(
+        ctx,
+        1 + xoffset * this.xsize,
+        1 + yoffset * (this.gap + this.letterHeight),
+        mapped
+      );
+    }
+  },
+  drawRect: function(ctx, x, y, fill) {
+    // console.log("drawRect:", [x, y, fill]);
+    ctx.fillStyle = fill;
+    ctx.fillRect(x, y, this.xsize, this.ysize);
+  },
+  groupByN: function(array, n) {
+    var result = [];
+
+    for (var i = 0; i < array.length; i += n) {
+      var element = array.slice(i, i + n).join(this.spaces);
+      // console.log("groupByN", [i, element]);
+      result.push(element);
+    }
+
+    // console.log("groupByN.result", result);
+    return result;
+  },
+  groupText: function(text, words) {
+    var texts = this.groupByN(text.toLowerCase().split(' '), words);
+    //var texts = groupByN(text.split(' '), words);
+
+    // console.log("groupText.result", texts);
+    return texts
+  },
+  apply: function() {
+    var self = this
+
+    this.mapText(function(element) {
+      // console.log('mapText.element', element)
+      var texts = self.groupText(element.nodeValue, self.maxWords)
+      // console.log("mapText.texts", texts)
+
+      var maxText = texts.reduce(function(acc, text) {
+        return Math.max(acc, text.length)
+      }, 0)
+
+      var range = document.createRange();
+      range.selectNodeContents(element);
+      var rect = range.getBoundingClientRect();
+      var width = self.xsize * maxText + 2;
+      var height = 2 + (texts.length * self.letterHeight) + ((texts.length - 1) * self.gap);
+      // console.log([maxText, width, height, texts, texts.length]);
+      var canvas = document.createElement('canvas');
+      canvas.title = element.nodeValue
+
+      canvas.id     = "CursorLayer";
+      canvas.width  = width;
+      canvas.height = height;
+      canvas.style.zIndex   = 8;
+      canvas.style.position = "relative";
+      canvas.style.border   = "1px solid";
+
+      var ctx=canvas.getContext("2d");
+      ctx.fillStyle = "#ffffff"
+      ctx.fillRect(0, 0, width, height)
+      self.drawTexts(texts, ctx);
+      return canvas;
+    });
   }
 }
 
