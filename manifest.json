@@ -4,9 +4,10 @@
   "name": "Substition Cipher",
   "description": "This extension performs a substition cipher on the text of a web page",
   "version": "1.0",
+  "options_page": "options.html",
 
   "permissions": [
-    "activeTab"
+    "activeTab", "storage"
   ],
 
   "background": {

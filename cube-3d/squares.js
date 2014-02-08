@@ -183,15 +183,15 @@ function LetterCube() {
 
   var initial = {
     _: RGB.fromHex('#ffffff'),
-    a: RGB.fromHex('#e3e6fd'),
+    a: RGB.fromHex('#ceceff'),
     b: RGB.fromHex('#0000ff'),
-    c: RGB.fromHex('#d1fbd7'),
+    c: RGB.fromHex('#b4ffb4'),
     d: RGB.fromHex('#40bfbf'),
     e: RGB.fromHex('#0080ff'),
     f: RGB.fromHex('#00ff00'),
     g: RGB.fromHex('#2ad555'),
     h: RGB.fromHex('#00ffff'),
-    i: RGB.fromHex('#ffe5e5'),
+    i: RGB.fromHex('#ffc9c9'),
     j: RGB.fromHex('#bf40bf'),
     k: RGB.fromHex('#8000ff'),
     l: RGB.fromHex('#bfbf40'),
@@ -804,6 +804,19 @@ CIELch.prototype = {
     var h = fromH       + (toH       - fromH      ) * percentage
 
     return new CIELch(l, c, h)
+  }
+}
+
+function Options() { }
+
+Options.prototype = {
+  isSolid: function(action) {
+    chrome.storage.sync.get('solid', function(value) {
+      action(value.solid)
+    })
+  },
+  setSolid: function(value, callback) {
+    chrome.storage.sync.set({'solid': value}, callback)
   }
 }
 
