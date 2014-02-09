@@ -46,12 +46,12 @@ Choice.prototype = {
       return new Percent((i > 0.66) ? 1 : (i > 0.33) ? 0.66 : 0.33)
     }
 
-    return this.face
     return this.face.squareAt(
       min(this.x.percent), max(this.x.percent), min(this.y.percent), max(this.y.percent))
   },
   choiceElements: function(listener) {
-    var img = this.selection().img(100, function(x, y, rgb) {
+    //var img = this.selection().img(100, function(x, y, rgb) {
+    var img = this.face.img(100, function(x, y, rgb) {
       this.x = x
       this.y = y
       listener(rgb)
@@ -185,7 +185,8 @@ function LetterCube() {
     _: RGB.fromHex('#ffffff'),
     a: RGB.fromHex('#ceceff'),
     b: RGB.fromHex('#0000ff'),
-    c: RGB.fromHex('#b4ffb4'),
+    c: RGB.fromHex('#95ff95'),
+    //c: RGB.fromHex('#b4ffb4'),
     d: RGB.fromHex('#40bfbf'),
     e: RGB.fromHex('#0080ff'),
     f: RGB.fromHex('#00ff00'),
@@ -270,6 +271,16 @@ LetterCube.prototype = {
 
       return value.initial.toHex()
     })
+  },
+  css: function() {
+    var result = ''
+
+    this.initial().foreach(function(letter, value) {
+      result = result + '.l-' + letter + ' { color: ' + value + '; font-weight: bold; white-space:nowrap; }\n'
+      // result = result + '.l-' + letter + ' { background: ' + value + '; color: ' + value + '; font-family: courier; font-weight: bold; white-space:nowrap; }\n'
+    })
+
+    return result
   }
 }
 
@@ -811,20 +822,43 @@ CIELch.prototype = {
 function Options() { }
 
 Options.prototype = {
+  get: function(key, action0) {
+    var action = action0 || function(value) {
+      console.log('options[' + key + '] =', value)
+    }
+
+    if (chrome.storage === undefined) {
+      action(JSON.parse(localStorage[key]))
+    } else {
+      chrome.storage.sync.get(key, function(value) {
+        action(value[key])
+      })
+    }
+  },
+  set: function(key, value, callback) {
+    if (chrome.storage === undefined) {
+      localStorage[key] = JSON.stringify(value)
+
+      if (callback !== undefined) {
+        callback()
+      }
+    } else {
+      var object = {}
+      object[key] = value
+      chrome.storage.sync.set(object, callback)
+    }
+  },
   isSolid: function(action) {
-    chrome.storage.sync.get('solid', function(value) {
-      action(value.solid)
-    })
+    this.get('solid', action)
   },
   setSolid: function(value, callback) {
-    chrome.storage.sync.set({'solid': value}, callback)
+    this.set('solid', value, callback)
   }
 }
 
 function Substitutor(solid) {
-  var cube = new LetterCube({})
-
-  this.mapping = cube.initial() // toHex()
+  this.cube = new LetterCube({})
+  this.mapping = this.cube.initial() // toHex()
   this.solid = solid
   this.xsize = 5;
   this.ysize = 5;
@@ -833,6 +867,7 @@ function Substitutor(solid) {
   this.letterHeight = this.ysize
   this.spaces = " "
 }
+
 
 Substitutor.prototype = {
   mapText: function(update) {
@@ -899,11 +934,11 @@ Substitutor.prototype = {
     // console.log("groupText.result", texts);
     return texts
   },
-  apply: function() {
+  drawSolid: function() {
     var self = this
 
-    this.mapText(function(element) {
-      // console.log('mapText.element', element)
+    return function(element) {
+      console.log('mapText.element', element)
       var texts = self.groupText(element.nodeValue, self.maxWords)
       // console.log("mapText.texts", texts)
 
@@ -932,7 +967,45 @@ Substitutor.prototype = {
       ctx.fillRect(0, 0, width, height)
       self.drawTexts(texts, ctx);
       return canvas;
-    });
+    }
+  },
+  alterLetterColours: function() {
+    var self = this
+    return function(element) {
+      var replacement = document.createElement('span')
+      // replacement.style = 'white-space:nowrap'
+      // replacement.setAttribute('style', 'white-space:nowrap')
+      var text = element.nodeValue
+
+      for (var i = 0; i < text.length; ++i) {
+        var letter = text[i], lc = letter.toLowerCase()
+        var mapped = self.mapping[lc]
+
+        if (mapped !== undefined) {
+          var letterSpan = document.createElement('span')
+          // letterSpan.appendChild(document.createTextNode(letter))
+          letterSpan.appendChild(document.createTextNode(letter))
+          letterSpan.setAttribute('class', 'l-' + lc)
+          replacement.appendChild(letterSpan)
+        } else {
+          replacement.appendChild(document.createTextNode(letter))
+        }
+      }
+
+      return replacement
+    }
+  },
+  apply: function() {
+    if (this.solid) {
+      this.mapText(this.drawSolid())
+    } else {
+      this.mapText(this.alterLetterColours())
+
+      var style = document.createElement('style')
+      style.type = 'text/css'
+      style.innerHTML = this.cube.css()
+      document.body.appendChild(style)
+    }
   }
 }
 
