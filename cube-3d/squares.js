@@ -275,12 +275,15 @@ LetterCube.prototype = {
       return value.initial.toHex()
     })
   },
-  css: function() {
+  css: function(solid) {
     var result = ''
 
     this.initial().foreach(function(letter, value) {
-      result = result + '.l-' + letter + ' { color: ' + value + '; font-weight: bold; white-space:nowrap; }\n'
-      // result = result + '.l-' + letter + ' { background: ' + value + '; color: ' + value + '; font-family: courier; font-weight: bold; white-space:nowrap; }\n'
+      if (solid) {
+        result = result + '.l-' + letter + ' { background: ' + value + '; color: ' + value + '; font-family: courier; font-weight: bold; white-space:nowrap; }\n'
+      } else {
+        result = result + '.l-' + letter + ' { color: ' + value + '; font-weight: bold; white-space:nowrap; }\n'
+      }
     })
 
     return result
@@ -1003,14 +1006,14 @@ Substitutor.prototype = {
     }
   },
   apply: function() {
-    if (this.solid) {
+    if (false && this.solid) {
       this.mapText(this.drawSolid())
     } else {
       this.mapText(this.alterLetterColours())
 
       var style = document.createElement('style')
       style.type = 'text/css'
-      style.innerHTML = this.cube.css()
+      style.innerHTML = this.cube.css(this.solid)
       document.body.appendChild(style)
     }
   }
