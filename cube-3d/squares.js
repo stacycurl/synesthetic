@@ -872,6 +872,10 @@ function Substitutor(solid) {
 Substitutor.prototype = {
   mapText: function(update) {
     function recurse(element) {
+      if (element.nodeName == 'SCRIPT' || element.nodeName == 'STYLE') {
+        return
+      }
+
       if (element.childNodes.length > 0) {
         for (var i = 0; i < element.childNodes.length; i++) {
           recurse(element.childNodes[i]);
