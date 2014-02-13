@@ -12,7 +12,8 @@ chrome.browserAction.onClicked.addListener(function(tab) {
     code: injectScript(function() {
       var options = new Options()
 
-      options.isSolid(function(result) {
+      // painful to get many...
+      options.substitutionStyle.get(function(result) {
         var substitutor = new Substitutor(result)
 
         substitutor.apply()

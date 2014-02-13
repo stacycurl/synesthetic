@@ -200,7 +200,8 @@ function LetterCube() {
     l: RGB.fromHex('#bfbf40'),
     m: RGB.fromHex('#808080'),
     n: RGB.fromHex('#512899'),
-    o: RGB.fromHex('#e3ff00'),
+    o: RGB.fromHex('#cde906'),
+    // o: RGB.fromHex('#e3ff00'),
     p: RGB.fromHex('#40bf40'),
     q: RGB.fromHex('#008080'),
     r: RGB.fromHex('#ff0000'),
@@ -275,11 +276,11 @@ LetterCube.prototype = {
       return value.initial.toHex()
     })
   },
-  css: function(solid) {
+  css: function(style) {
     var result = ''
 
     this.initial().foreach(function(letter, value) {
-      if (solid) {
+      if (style == 'solid') {
         result = result + '.l-' + letter + ' { background: ' + value + '; color: ' + value + '; font-family: courier; font-weight: bold; white-space:nowrap; }\n'
       } else {
         result = result + '.l-' + letter + ' { color: ' + value + '; font-weight: bold; white-space:nowrap; }\n'
@@ -565,6 +566,14 @@ Array.prototype.foreach = function(f) {
   }
 }
 
+if (typeof(NodeList) != 'undefined') {
+  NodeList.prototype.foreach = function(f) {
+    for (var i = 0; i < this.length; ++i) {
+      f(this[i])
+    }
+  }
+}
+
 function Percent(percent) {
   if (percent instanceof Percent) {
     this.percent = percent.percent
@@ -825,47 +834,73 @@ CIELch.prototype = {
   }
 }
 
-function Options() { }
+function Options() {
+  this.substitutionStyle = new Option('substitution-style')
+  this.substitutionSchema = new Option('substitution-scheme')
+}
 
-Options.prototype = {
-  get: function(key, action0) {
-    var action = action0 || function(value) {
-      console.log('options[' + key + '] =', value)
+function Option(key) {
+  this.key = key
+}
+
+Option.prototype = {
+  get: function(action0) {
+    var self = this
+    var action = action0 || function(result) {
+      console.log('options[' + self.key + '] =', result)
     }
 
-    if (chrome.storage === undefined) {
-      action(JSON.parse(localStorage[key]))
-    } else {
-      chrome.storage.sync.get(key, function(value) {
-        action(value[key])
+    if (this.hasChrome()) {
+      chrome.storage.sync.get(self.key, function(value) {
+        console.log('get', self.key, value, value[self.key])
+        action(value[self.key])
       })
+    } else {
+      action(JSON.parse(localStorage[self.key] || JSON.stringify(this.default())))
     }
   },
-  set: function(key, value, callback) {
-    if (chrome.storage === undefined) {
+  set: function(value, callback) {
+    if (this.hasChrome()) {
+      console.log('set', this.key, value)
+      var object = {}
+      object[this.key] = value
+      chrome.storage.sync.set(object, callback)
+    } else {
       localStorage[key] = JSON.stringify(value)
 
       if (callback !== undefined) {
         callback()
       }
-    } else {
-      var object = {}
-      object[key] = value
-      chrome.storage.sync.set(object, callback)
     }
   },
-  isSolid: function(action) {
-    this.get('solid', action)
+  default: function() {
+    return {}
   },
-  setSolid: function(value, callback) {
-    this.set('solid', value, callback)
+  hasChrome: function () {
+    return (typeof(chrome) != 'undefined') && (chrome.storage !== undefined)
   }
 }
 
-function Substitutor(solid) {
+Document.prototype.makeElement = function(name, contents) {
+  var result = document.createElement(name)
+
+  contents.foreach(function(content) {
+    if (content.nodeType == Document.ELEMENT_NODE) {
+      result.appendChild(content)
+    } else if (typeof(content) == 'string') {
+      result.appendChild(document.createTextNode(content))
+    } else {
+      result.setAttribute(content[0], content[1])
+    }
+  })
+
+  return result
+}
+
+function Substitutor(style) {
   this.cube = new LetterCube({})
   this.mapping = this.cube.initial() // toHex()
-  this.solid = solid
+  this.style = style
   this.xsize = 5;
   this.ysize = 5;
   this.maxWords = 13
@@ -998,6 +1033,9 @@ Substitutor.prototype = {
           letterSpan.setAttribute('class', 'l-' + lc)
           replacement.appendChild(letterSpan)
         } else {
+          if (letter == ' ') {
+            letter = ' \u00A0'
+          }
           replacement.appendChild(document.createTextNode(letter))
         }
       }
@@ -1013,7 +1051,7 @@ Substitutor.prototype = {
 
       var style = document.createElement('style')
       style.type = 'text/css'
-      style.innerHTML = this.cube.css(this.solid)
+      style.innerHTML = this.cube.css(this.style)
       document.body.appendChild(style)
     }
   }

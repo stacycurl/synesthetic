@@ -1,12 +1,49 @@
 var options = new Options()
-var solid = document.querySelector('#solid')
 
-options.isSolid(function(value) {
-  solid.checked = value
+function Radio(name, display, values) {
+  this.name = name
+  this.display = display
+  this.values = values
+  this.radios = document.querySelectorAll('input[type="radio"][name="' + this.name + '"]')
+}
+
+Radio.prototype = {
+  elements: function() {
+              /*
+    document.makeElement('label'
+    document.createElement('label')
+    document.createTextNode('...')
+    document.createElement('input')
+   <label for="gender">Substition Style</label><br/>
+   Text   <input name='substitution-style' type='radio' value='text' checked='checked'/><br/>
+   Solid  <input name='substitution-style' type='radio' value='solid'/><br/>
+   Custom <input name='substitution-style' type='radio' value='custom'/><br/>
+   */
+  },
+  onclick: function(handler) {
+    this.radios.foreach(function(radio) {
+      radio.addEventListener('click', function(event) {
+        handler(event.toElement.value)
+      })
+    })
+  },
+  select: function(value) {
+    // console.log('radio select', value)
+    this.radios.foreach(function(radio) {
+      radio.checked = (radio.value == value)
+    })
+  }
+}
+
+var substitutionStyle = new Radio('substitution-style')
+
+options.substitutionStyle.get(function(value) {
+  // console.log(value)
+  substitutionStyle.select(value)
 })
 
-solid.addEventListener('click', function() {
-  options.setSolid(solid.checked)
+substitutionStyle.onclick(function(value) {
+  options.substitutionStyle.set(value)
 })
 
 var cube = new LetterCube()
