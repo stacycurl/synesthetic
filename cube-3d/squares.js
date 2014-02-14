@@ -835,14 +835,74 @@ CIELch.prototype = {
 }
 
 function Options() {
-  this.substitutionStyle = new Option('substitution-style')
-  this.substitutionSchema = new Option('substitution-scheme')
+  hasChrome = (typeof(chrome) != 'undefined') && (chrome.storage !== undefined)
+
+  this.get = Options.get(hasChrome)
+  this.set = Options.set(hasChrome)
+  this.substitutionStyle = this.create('substitution-style')
+  this.substitutionScheme = this.create('substitution-scheme')
 }
 
-function Option(key) {
+Options.prototype = {
+  create: function(key) {
+    return new Option(key, this.get, this.set)
+  }
+}
+
+Options.get = function(hasChrome) {
+  if (hasChrome) {
+    return function(action0) {
+      var action = action0 || function(value) {
+        console.log('options', value)
+      }
+      chrome.storage.sync.get('options', function(value) {
+        // console.log('Options.hasChrome.get.value', value)
+        action(value.options)
+      })
+    }
+  } else {
+    return function(action) {
+      // console.log('Options.hasChrome.get.value', localStorage.value)
+      action(JSON.parse(localStorage.options || JSON.stringify(this.default())))
+    }
+  }
+}
+
+Options.set = function(hasChrome) {
+  if (hasChrome) {
+    return function(value) {
+      // console.log('Options.set.hasChroe.object', value)
+      chrome.storage.sync.set({options: value})
+    }
+  } else {
+    return function(value) {
+      // console.log('Options.set.!hasChroe.object', value)
+      localStorage.options = JSON.stringify(value)
+    }
+  }
+}
+
+function Option(key, get, set) {
   this.key = key
+
+  this.get = function(callback0) {
+    var callback = callback0 || function(value) {
+      console.log('options[' + key + '] = ' + value)
+    }
+    get(function(value) {
+      callback(value[key])
+    })
+  }
+
+  this.set = function(value) {
+    get(function(current) {
+      current[key] = value
+      set(current)
+    })
+  }
 }
 
+/*
 Option.prototype = {
   get: function(action0) {
     var self = this
@@ -880,6 +940,7 @@ Option.prototype = {
     return (typeof(chrome) != 'undefined') && (chrome.storage !== undefined)
   }
 }
+*/
 
 Document.prototype.makeElement = function(name, contents) {
   var result = document.createElement(name)
