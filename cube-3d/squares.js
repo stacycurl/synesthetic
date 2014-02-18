@@ -76,10 +76,13 @@ Letter.prototype = {
     // console.group('Letter.' + this.letter)
 
     var tr = document.createElement('tr')
+
+    tr.appendChild(document.makeElement('td', [
+      document.makeElement('input', [['type', 'checkbox'], 'Solid'])
+    ]))
+
+    tr.appendChild(document.makeElement('td', [this.letter]))
     var td = document.createElement('td')
-    td.appendChild(document.createTextNode(this.letter))
-    tr.appendChild(td)
-    td = document.createElement('td')
 
     this.choices.forEach(function(choice) {
       td.appendChild(choice.choiceElements(function(rgb) {
@@ -92,11 +95,7 @@ Letter.prototype = {
 
     function createLetterSpan(self, solid) {
       function createSpan(letter) {
-        var result = document.createElement('span')
-        result.setAttribute('class', letter)
-        result.setAttribute('solid', solid)
-        result.appendChild(document.createTextNode(letter))
-        return result
+        return document.makeElement('span', [['class', letter], ['solid', solid], letter])
       }
 
       var text = ''
@@ -116,16 +115,13 @@ Letter.prototype = {
       return span
     }
 
-    td = document.createElement('td')
-    var def = document.createElement('span')
-    def.setAttribute('class', 'def-' + this.letter)
-    td.appendChild(def)
-    td.appendChild(document.createElement('br'))
-    td.appendChild(createLetterSpan(this, false))
-    td.appendChild(document.createElement('br'))
-    td.appendChild(createLetterSpan(this, true))
-
-    tr.appendChild(td)
+    tr.appendChild(document.makeElement('td', [
+      document.makeElement('span', [['class', 'def-' + this.letter]]),
+      document.createElement('br'),
+      createLetterSpan(this, false),
+      document.createElement('br'),
+      createLetterSpan(this, true)
+    ]))
 
     // console.groupEnd()
     return tr
@@ -914,8 +910,9 @@ function Option(key, get, set) {
 }
 
 if (typeof(Document) != 'undefined') {
-  Document.prototype.makeElement = function(name, contents) {
+  Document.prototype.makeElement = function(name, contents0) {
     var result = document.createElement(name)
+    var contents = contents0 || []
 
     contents.forEach(function(content) {
       if (content.nodeType == Document.ELEMENT_NODE) {
