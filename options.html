@@ -4,17 +4,16 @@
     body { font-family: "Courier" }
     dl { border: 1px }
   </style>
+  <script type='text/javascript' id='lt_ws' src='http://localhost:55999/socket.io/lighttable/ws.js'></script>
  </head>
  <body>
-  <form action="#">
-   <label for="gender">Substition Style</label><br/>
-   Text   <input name='substitution-style' type='radio' value='text' checked='checked'/><br/>
-   Solid  <input name='substitution-style' type='radio' value='solid'/><br/>
-   Custom <input name='substitution-style' type='radio' value='custom'/><br/>
-  </form> 
+  <form id='options' action="#">
+    <label for='style'>Substitution Style</label><br/>
+    Text <input name='substitution-style' value='text' type='radio'>
+    Solid <input name='substitution-style' value='solid' type='radio'>
+  </form>
 
   <script src='cube-3d/squares.js'></script>
   <script src='options.js'></script>
  </body>
 </html>
-

@@ -1,13 +1,13 @@
 function Letters(mapping) {
   var self = this
 
-  this.foreach(function(letter) {
+  this.forEach(function(letter) {
     self[letter] = mapping[letter]
   })
 }
 
 Letters.prototype = {
-  foreach: function(f) {
+  forEach: function(f) {
     var letters = "_abcdefghijklmnopqrstuvwxyz"
 
     for (var l = 0; l < letters.length; ++l) {
@@ -19,7 +19,7 @@ Letters.prototype = {
 
     var result = new Letters({})
 
-    this.foreach(function(letter, value) {
+    this.forEach(function(letter, value) {
       result[letter] = f(letter, value)
     })
 
@@ -52,8 +52,6 @@ Choice.prototype = {
   choiceElements: function(listener) {
     //var img = this.selection().img(100, function(x, y, rgb) {
     var img = this.face.img(100, function(x, y, rgb) {
-      this.x = x
-      this.y = y
       listener(rgb)
     })
 
@@ -83,7 +81,7 @@ Letter.prototype = {
     tr.appendChild(td)
     td = document.createElement('td')
 
-    this.choices.foreach(function(choice) {
+    this.choices.forEach(function(choice) {
       td.appendChild(choice.choiceElements(function(rgb) {
         listener(rgb)
         // dd.appendChild(new ColourSquare(rgb, rgb, rgb, rgb).img(10))
@@ -104,7 +102,7 @@ Letter.prototype = {
       var text = ''
       var span = document.createElement('span')
 
-      new Letters({}).foreach(function(letter) {
+      new Letters({}).forEach(function(letter) {
         span.appendChild(document.createTextNode(' '))
         if (self.letter == letter) {
           span.appendChild(document.createTextNode('\u00A0'))
@@ -221,10 +219,10 @@ function LetterCube() {
     m: new Letter('m', initial.m, [new Choice(new ColourSquare(RGB.white, RGB.black, RGB.white, RGB.black), 0.5, 0)])
   })
 
-  cube.foreachFace(function(face) {
+  cube.forEachFace(function(face) {
     var interpolationsForFace = interpolations[face.name]
 
-    alphabet.foreach(function(letter) {
+    alphabet.forEach(function(letter) {
       var percentages = interpolationsForFace[letter]
 
       if (percentages !== undefined) {
@@ -248,7 +246,7 @@ LetterCube.prototype = {
   choiceElements: function(listener) {
     var table = document.createElement('table')
 
-    this.alphabet.foreach(function(letter, value) {
+    this.alphabet.forEach(function(letter, value) {
       table.appendChild(value.choiceElements(function(rgb) {
         listener(letter, rgb)
       }))
@@ -256,7 +254,7 @@ LetterCube.prototype = {
 
     var text = "var initial = {\n"
 
-    this.alphabet.foreach(function(letter, value) {
+    this.alphabet.forEach(function(letter, value) {
       text = text + "  " + letter + ": RGB.fromHex('" + value.initial.toHex() + "'),\n"
     })
 
@@ -279,7 +277,7 @@ LetterCube.prototype = {
   css: function(style) {
     var result = ''
 
-    this.initial().foreach(function(letter, value) {
+    this.initial().forEach(function(letter, value) {
       if (style == 'solid') {
         result = result + '.l-' + letter + ' { background: ' + value + '; color: ' + value + '; font-family: courier; font-weight: bold; white-space:nowrap; }\n'
       } else {
@@ -319,7 +317,7 @@ ColourCube.prototype = {
       frontSquare.interpolate(backSquare, end(z)).xMirror()
     )
   },
-  foreachFace: function(f) {
+  forEachFace: function(f) {
     f(this.front); f(this.back); f(this.left); f(this.right); f(this.top); f(this.bottom)
   },
   drawUnfolded: function(element, size) {
@@ -560,14 +558,18 @@ Array.prototype.last = function() {
   return this[this.length - 1]
 }
 
-Array.prototype.foreach = function(f) {
-  for (var i = 0; i < this.length; ++i) {
-    f(this[i])
-  }
+Array.prototype.flatMap = function(f) {
+  var result = []
+
+  this.forEach(function(element, index) {
+    result = result.concat(f(element, index))
+  })
+
+  return result
 }
 
 if (typeof(NodeList) != 'undefined') {
-  NodeList.prototype.foreach = function(f) {
+  NodeList.prototype.forEach = function(f) {
     for (var i = 0; i < this.length; ++i) {
       f(this[i])
     }
@@ -835,9 +837,10 @@ CIELch.prototype = {
 }
 
 function Options() {
-  hasChrome = (typeof(chrome) != 'undefined') && (chrome.storage !== undefined)
+  var hasChrome = (typeof(chrome) != 'undefined') && (chrome.storage !== undefined)
+  var defaults = {'substitution-scheme': 'colour', 'substitution-style': 'text'}
 
-  this.get = Options.get(hasChrome)
+  this.get = Options.get(hasChrome, defaults)
   this.set = Options.set(hasChrome)
   this.substitutionStyle = this.create('substitution-style')
   this.substitutionScheme = this.create('substitution-scheme')
@@ -849,7 +852,7 @@ Options.prototype = {
   }
 }
 
-Options.get = function(hasChrome) {
+Options.get = function(hasChrome, defaults) {
   if (hasChrome) {
     return function(action0) {
       var action = action0 || function(value) {
@@ -862,8 +865,16 @@ Options.get = function(hasChrome) {
     }
   } else {
     return function(action) {
-      // console.log('Options.hasChrome.get.value', localStorage.value)
-      action(JSON.parse(localStorage.options || JSON.stringify(this.default())))
+      var result
+      if (localStorage.options !== undefined) {
+        result = JSON.parse(localStorage.options)
+      } else {
+        result = defaults
+      }
+
+      // console.log('Options.hasChrome.get.value', result)
+
+      action(result)
     }
   }
 }
@@ -902,60 +913,22 @@ function Option(key, get, set) {
   }
 }
 
-/*
-Option.prototype = {
-  get: function(action0) {
-    var self = this
-    var action = action0 || function(result) {
-      console.log('options[' + self.key + '] =', result)
-    }
+if (typeof(Document) != 'undefined') {
+  Document.prototype.makeElement = function(name, contents) {
+    var result = document.createElement(name)
 
-    if (this.hasChrome()) {
-      chrome.storage.sync.get(self.key, function(value) {
-        console.log('get', self.key, value, value[self.key])
-        action(value[self.key])
-      })
-    } else {
-      action(JSON.parse(localStorage[self.key] || JSON.stringify(this.default())))
-    }
-  },
-  set: function(value, callback) {
-    if (this.hasChrome()) {
-      console.log('set', this.key, value)
-      var object = {}
-      object[this.key] = value
-      chrome.storage.sync.set(object, callback)
-    } else {
-      localStorage[key] = JSON.stringify(value)
-
-      if (callback !== undefined) {
-        callback()
+    contents.forEach(function(content) {
+      if (content.nodeType == Document.ELEMENT_NODE) {
+        result.appendChild(content)
+      } else if (typeof(content) == 'string') {
+        result.appendChild(document.createTextNode(content))
+      } else {
+        result.setAttribute(content[0], content[1])
       }
-    }
-  },
-  default: function() {
-    return {}
-  },
-  hasChrome: function () {
-    return (typeof(chrome) != 'undefined') && (chrome.storage !== undefined)
+    })
+
+    return result
   }
-}
-*/
-
-Document.prototype.makeElement = function(name, contents) {
-  var result = document.createElement(name)
-
-  contents.foreach(function(content) {
-    if (content.nodeType == Document.ELEMENT_NODE) {
-      result.appendChild(content)
-    } else if (typeof(content) == 'string') {
-      result.appendChild(document.createTextNode(content))
-    } else {
-      result.setAttribute(content[0], content[1])
-    }
-  })
-
-  return result
 }
 
 function Substitutor(style) {

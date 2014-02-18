@@ -19,6 +19,12 @@ describe('Array', function() {
       expect([1, 2, 3].last()).to.equal(3)
     })
   })
+
+  describe('#flatMap', function() {
+    it('should map over every element an concatenate the arrays returned', function() {
+      expect([1, 2].flatMap(function(e) { return [e, -e] })).to.be.like([1, -1, 2, -2])
+    })
+  })
 })
 
 describe('RGB', function() {
@@ -151,13 +157,13 @@ describe('Letters', function() {
     })
   })
 
-  describe('foreach', function() {
+  describe('forEach', function() {
     it('should provide each letter & value', function() {
       var visited = []
 
       var letters = new Letters({a: 1, b: 2, c: 3})
 
-      letters.foreach(function(letter, value) {
+      letters.forEach(function(letter, value) {
         if (value !== undefined) {
           visited.push([letter, value])
         }

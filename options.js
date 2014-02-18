@@ -2,26 +2,14 @@ var options = new Options()
 
 function Radio(name, display, values) {
   this.name = name
-  this.display = display
-  this.values = values
-  this.radios = document.querySelectorAll('input[type="radio"][name="' + this.name + '"]')
 }
 
 Radio.prototype = {
-  elements: function() {
-              /*
-    document.makeElement('label'
-    document.createElement('label')
-    document.createTextNode('...')
-    document.createElement('input')
-   <label for="gender">Substition Style</label><br/>
-   Text   <input name='substitution-style' type='radio' value='text' checked='checked'/><br/>
-   Solid  <input name='substitution-style' type='radio' value='solid'/><br/>
-   Custom <input name='substitution-style' type='radio' value='custom'/><br/>
-   */
+  radios: function() {
+    return document.querySelectorAll('input[type="radio"][name="' + this.name + '"]')
   },
   onclick: function(handler) {
-    this.radios.foreach(function(radio) {
+    this.radios().forEach(function(radio) {
       radio.addEventListener('click', function(event) {
         handler(event.toElement.value)
       })
@@ -29,13 +17,17 @@ Radio.prototype = {
   },
   select: function(value) {
     // console.log('radio select', value)
-    this.radios.foreach(function(radio) {
+    this.radios().forEach(function(radio) {
+      // console.log('Radio.select.radio', radio, value, radio.value)
       radio.checked = (radio.value == value)
     })
   }
 }
 
+//var substitutionScheme = new Radio('substitution-scheme', 'Substitution Scheme', ['Ternary', 'Colour'])
+//substitutionScheme.addTo('#options')
 var substitutionStyle = new Radio('substitution-style')
+
 
 options.substitutionStyle.get(function(value) {
   // console.log(value)
@@ -53,12 +45,12 @@ var cube = new LetterCube()
 var update = function(letter, rgb) {
   var hex = rgb.toHex();
 
-  [].slice.call(document.querySelectorAll('span.def-' + letter)).foreach(function(def) {
+  document.querySelectorAll('span.def-' + letter).forEach(function(def) {
     def.innerHTML = ''
     def.appendChild(document.createTextNode(hex))
   });
 
-  [].slice.call(document.querySelectorAll('span.' + letter)).foreach(function(span) {
+  document.querySelectorAll('span.' + letter).forEach(function(span) {
     span.style.color = hex
 
     if (span.getAttribute('solid') == "true") {
@@ -68,7 +60,7 @@ var update = function(letter, rgb) {
   // console.log([letter, rgb])
 }
 
-cube.choiceElements(update).foreach(function(element) {
+cube.choiceElements(update).forEach(function(element) {
   document.body.appendChild(element)
 })
 
