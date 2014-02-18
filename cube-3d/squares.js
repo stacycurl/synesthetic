@@ -78,7 +78,7 @@ Letter.prototype = {
     var tr = document.createElement('tr')
 
     tr.appendChild(document.makeElement('td', [
-      document.makeElement('input', [['type', 'checkbox'], 'Solid'])
+      document.makeElement('input', [['type', 'checkbox'], ['class', 'solid solid-' + this.letter], 'Solid'])
     ]))
 
     tr.appendChild(document.makeElement('td', [this.letter]))
@@ -240,6 +240,14 @@ LetterCube.prototype = {
     })
   },
   choiceElements: function(listener) {
+    var allSolid = document.makeElement('input', [['type', 'checkbox'], ['class', 'all-solid'], 'All Solid'])
+
+    allSolid.addEventListener('click', function(event) {
+      document.querySelectorAll('.solid').forEach(function(something) {
+        something.checked = allSolid.checked
+      })
+    })
+
     var table = document.createElement('table')
 
     this.alphabet.forEach(function(letter, value) {
@@ -258,7 +266,7 @@ LetterCube.prototype = {
     var pre = document.createElement('pre')
     pre.appendChild(document.createTextNode(text))
 
-    return new Array(table, pre)
+    return [allSolid, table, pre]
   },
   initial: function(listener) {
     return this.alphabet.map(function(letter, value) {

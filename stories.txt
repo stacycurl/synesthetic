@@ -1,8 +1,8 @@
 Todo:
-- Add 'check all' checkbox
 - Remove 'substitution style', this can be derived from the checkboxes
 - Add substitution scheme radio
 
 Done:
++ Add 'check all' checkbox
 + Add 'solid' checkboxes to each letter
 + Remove '_'
