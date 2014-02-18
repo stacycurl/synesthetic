@@ -8,7 +8,7 @@ function Letters(mapping) {
 
 Letters.prototype = {
   forEach: function(f) {
-    var letters = "_abcdefghijklmnopqrstuvwxyz"
+    var letters = "abcdefghijklmnopqrstuvwxyz"
 
     for (var l = 0; l < letters.length; ++l) {
       f(letters[l], this[letters[l]])

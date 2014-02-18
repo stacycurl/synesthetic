@@ -209,7 +209,6 @@ describe('LetterCube', function() {
 
   describe('letters', function() {
     it('should match expected colours', function() {
-      expect(lc.alphabet._.rgb()).to.be.like(RGB.white)
       expect(lc.alphabet.r.rgb()).to.be.like(RGB.red)
       expect(lc.alphabet.f.rgb()).to.be.like(RGB.green)
       expect(lc.alphabet.b.rgb()).to.be.like(RGB.blue)
@@ -223,7 +222,6 @@ describe('LetterCube', function() {
     var actual = lc.toHex()
 
     it('should match expected colours', function() {
-      expect(actual._).to.be.like('#ffffff')
       expect(actual.a).to.be.like('#8080ff')
       expect(actual.b).to.be.like('#0000ff')
       expect(actual.c).to.be.like('#80ff80')

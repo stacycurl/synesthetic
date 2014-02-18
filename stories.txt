@@ -1,4 +1,7 @@
-- Remove '_'
+Todo:
 - Add 'solid' checkboxes to eacy letter
 - Add 'check all' checkbox
 - Remove 'substitution style', this can be derived from the checkboxes
+
+Done:
++ Remove '_'
