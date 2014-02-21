@@ -26,17 +26,21 @@ Radio.prototype = {
 
 //var substitutionScheme = new Radio('substitution-scheme', 'Substitution Scheme', ['Ternary', 'Colour'])
 //substitutionScheme.addTo('#options')
-var substitutionStyle = new Radio('substitution-style')
+//var substitutionStyle = new Radio('substitution-style')
 
 
 options.substitutionStyle.get(function(value) {
   // console.log(value)
-  substitutionStyle.select(value)
+  //substitutionStyle.select(value)
 })
 
+/*
 substitutionStyle.onclick(function(value) {
-  options.substitutionStyle.set(value)
+  options.substitutionStyle.set(new Letters({}).map(function(letter) {
+    return value
+  }))
 })
+*/
 
 var cube = new LetterCube()
 
@@ -60,7 +64,7 @@ var update = function(letter, rgb) {
   // console.log([letter, rgb])
 }
 
-cube.choiceElements(update).forEach(function(element) {
+cube.choiceElements(update, options).forEach(function(element) {
   document.body.appendChild(element)
 })
 

@@ -27,6 +27,10 @@ Letters.prototype = {
   }
 }
 
+Letters.map     = function(f) { return new Letters({}).map(f)                }
+Letters.forEach = function(f) { return new Letters({}).forEach(f)            }
+Letters.const   = function(c) { return Letters.map(function(_) { return c }) }
+
 function Choice(face, x, y) {
   this.face = face
   this.x    = new Percent(x)
@@ -72,14 +76,21 @@ Letter.prototype = {
   rgb: function(index) {
     return this.choices[index || this.choices.length - 1].colour()
   },
-  choiceElements: function(listener) {
+  choiceElements: function(listener, options) {
     // console.group('Letter.' + this.letter)
-
     var tr = document.createElement('tr')
 
-    tr.appendChild(document.makeElement('td', [
-      document.makeElement('input', [['type', 'checkbox'], ['class', 'solid solid-' + this.letter], 'Solid'])
-    ]))
+    var checkbox = document.makeElement('input', [['type', 'checkbox'], ['class', 'solid solid-' + this.letter], 'Solid'])
+    var self = this
+
+    checkbox.addEventListener('click', function(event) {
+      options.substitutionStyle.update(function(current) {
+        current[self.letter] = checkbox.checked ? 'solid' : 'text'
+        return current
+      })
+    })
+
+    tr.appendChild(document.makeElement('td', [checkbox]))
 
     tr.appendChild(document.makeElement('td', [this.letter]))
     var td = document.createElement('td')
@@ -101,7 +112,7 @@ Letter.prototype = {
       var text = ''
       var span = document.createElement('span')
 
-      new Letters({}).forEach(function(letter) {
+      Letters.forEach(function(letter) {
         span.appendChild(document.createTextNode(' '))
         if (self.letter == letter) {
           span.appendChild(document.createTextNode('\u00A0'))
@@ -239,13 +250,15 @@ LetterCube.prototype = {
       return letter.rgb().round().toHex()
     })
   },
-  choiceElements: function(listener) {
+  choiceElements: function(listener, options) {
     var allSolid = document.makeElement('input', [['type', 'checkbox'], ['class', 'all-solid'], 'All Solid'])
 
     allSolid.addEventListener('click', function(event) {
       document.querySelectorAll('.solid').forEach(function(something) {
         something.checked = allSolid.checked
       })
+
+      options.substitutionStyle.set(Letters.const(allSolid.checked ? 'solid' : 'text'))
     })
 
     var table = document.createElement('table')
@@ -253,7 +266,7 @@ LetterCube.prototype = {
     this.alphabet.forEach(function(letter, value) {
       table.appendChild(value.choiceElements(function(rgb) {
         listener(letter, rgb)
-      }))
+      }, options))
     })
 
     var text = "var initial = {\n"
@@ -282,7 +295,7 @@ LetterCube.prototype = {
     var result = ''
 
     this.initial().forEach(function(letter, value) {
-      if (style == 'solid') {
+      if (style[letter] == 'solid') {
         result = result + '.l-' + letter + ' { background: ' + value + '; color: ' + value + '; font-family: courier; font-weight: bold; white-space:nowrap; }\n'
       } else {
         result = result + '.l-' + letter + ' { color: ' + value + '; font-weight: bold; white-space:nowrap; }\n'
@@ -842,11 +855,15 @@ CIELch.prototype = {
 
 function Options() {
   var hasChrome = (typeof(chrome) != 'undefined') && (chrome.storage !== undefined)
-  var defaults = {'substitution-scheme': 'colour', 'substitution-style': 'text'}
+
+  var defaults = {
+    'substitution-scheme': 'colour',
+    'substitution-style': Letters.const('text')
+  }
 
   this.get = Options.get(hasChrome, defaults)
   this.set = Options.set(hasChrome)
-  this.substitutionStyle = this.create('substitution-style')
+  this.substitutionStyle  = this.create('substitution-style')
   this.substitutionScheme = this.create('substitution-scheme')
 }
 
@@ -913,6 +930,14 @@ function Option(key, get, set) {
     get(function(current) {
       current[key] = value
       set(current)
+    })
+  }
+
+  var self = this
+
+  this.update = function(f) {
+    self.get(function(current) {
+      self.set(f(current))
     })
   }
 }

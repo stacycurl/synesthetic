@@ -1,8 +1,10 @@
 Todo:
+- Populate letter substitution style checkboxes from current config
 - Remove 'substitution style', this can be derived from the checkboxes
 - Add substitution scheme radio
 
 Done:
++ Expand 'substitution style' to be defined per letter
 + Add 'check all' checkbox
 + Add 'solid' checkboxes to each letter
 + Remove '_'
