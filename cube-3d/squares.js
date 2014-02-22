@@ -907,7 +907,7 @@ Options.get = function(hasChrome, defaults) {
       }
       chrome.storage.sync.get('options', function(value) {
         // console.log('Options.hasChrome.get.value', value)
-        action(value.options)
+        action((value.options) || defaults)
       })
     }
   } else {

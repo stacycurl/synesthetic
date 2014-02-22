@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
 
-  "name": "Substition Cipher",
-  "description": "This extension performs a substition cipher on the text of a web page",
+  "name": "Synesthetic",
+  "description": "A chrome extension to explore synthetic synesthesia",
   "version": "1.0",
   "options_page": "options.html",
 
@@ -16,7 +16,7 @@
   },
 
   "browser_action": {
-    "default_title": "Perform substition cipher on this page",
+    "default_title": "Modify letter colours",
     "default_icon": "icon.png"
   }
 }
