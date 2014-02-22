@@ -1,10 +1,21 @@
 Todo:
-- Populate letter substitution style checkboxes from current config
+- Sync colours choosen with stored options
+- Show standalone colours for each letter
+   (similar to when you could choose a colour for space)
+- Reenable ternary substitution (probably in terms of css rules using 'data images')
+- Remove use of canvas in substituting
+- Publish on Chrome Web Store
+- Add custom image substitutions
+- Express ternary as custom image substitution
+- Show selected colour in colour picker
+- Rotate colour pickers of letters so they are colour aligned with each other)
+- Add 'hilbertise' colour (like the image at the bottom of http://corte.si/%2Fposts/code/hilbert/portrait/index.html)
 - Figure out how to unify an updatable options with its current value
-- Remove 'substitution style', this can be derived from the checkboxes
-- Add substitution scheme radio
+
 
 Done:
++ Populate letter substitution style checkboxes from current config
++ Remove 'substitution style', this can be derived from the checkboxes
 + Expand 'substitution style' to be defined per letter
 + Add 'check all' checkbox
 + Add 'solid' checkboxes to each letter
