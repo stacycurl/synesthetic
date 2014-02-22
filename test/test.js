@@ -172,6 +172,16 @@ describe('Letters', function() {
       expect(visited).to.be.like([['a', 1], ['b', 2], ['c', 3]])
     })
   })
+
+  describe('#letterOf', function() {
+    it('should return the letter that is mapped to a value', function() {
+      function letterOf(letter, map) { return new Letters(map).letterOf(letter) }
+
+      expect(letterOf(123, {})).to.be.like(undefined)
+      expect(letterOf(123, {a: 123})).to.be.like('a')
+      expect(letterOf(123, {a: 123, b: 123})).to.be.like('a')
+    })
+  })
 })
 
 describe('Letter', function() {

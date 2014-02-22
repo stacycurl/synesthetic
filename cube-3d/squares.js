@@ -24,6 +24,17 @@ Letters.prototype = {
     })
 
     return result
+  },
+  letterOf: function(searchFor) {
+    var result
+
+    this.forEach(function(letter, value) {
+      if (result === undefined && value === searchFor) {
+        result = letter
+      }
+    })
+
+    return result
   }
 }
 
@@ -76,16 +87,22 @@ Letter.prototype = {
   rgb: function(index) {
     return this.choices[index || this.choices.length - 1].colour()
   },
-  choiceElements: function(listener, options) {
+  choiceElements: function(listener, options, substitutionStyle, updateAllSolidChecked) {
     // console.group('Letter.' + this.letter)
     var tr = document.createElement('tr')
 
-    var checkbox = document.makeElement('input', [['type', 'checkbox'], ['class', 'solid solid-' + this.letter], 'Solid'])
+    var checkbox = document.makeElement('input', [
+      ['type', 'checkbox'], ['class', 'solid solid-' + this.letter],
+      (substitutionStyle == 'solid') ? ['checked', 'checked'] : [],
+      'Solid'
+    ])
+
     var self = this
 
     checkbox.addEventListener('click', function(event) {
       options.substitutionStyle.update(function(current) {
         current[self.letter] = checkbox.checked ? 'solid' : 'text'
+        updateAllSolidChecked(current)
         return current
       })
     })
@@ -120,7 +137,6 @@ Letter.prototype = {
           span.appendChild(createSpan(self.letter))
           span.appendChild(createSpan(letter))
         }
-        //text = text + ' ' + self.letter + letter
       })
 
       return span
@@ -190,7 +206,8 @@ function LetterCube() {
     _: RGB.fromHex('#ffffff'),
     a: RGB.fromHex('#ceceff'),
     b: RGB.fromHex('#0000ff'),
-    c: RGB.fromHex('#95ff95'),
+    c: RGB.fromHex('#b4ffb4'),
+    //c: RGB.fromHex('#95ff95'),
     //c: RGB.fromHex('#b4ffb4'),
     d: RGB.fromHex('#40bfbf'),
     e: RGB.fromHex('#0080ff'),
@@ -203,8 +220,11 @@ function LetterCube() {
     //j: RGB.fromHex('#bf40bf'),
     k: RGB.fromHex('#8000ff'),
     l: RGB.fromHex('#bfbf40'),
-    m: RGB.fromHex('#808080'),
-    n: RGB.fromHex('#512899'),
+    m: RGB.fromHex('#a7a7a7'),
+    //m: RGB.fromHex('#909090'),
+    //m: RGB.fromHex('#808080'),
+    n: RGB.fromHex('#275dba'),
+    //n: RGB.fromHex('#512899'),
     o: RGB.fromHex('#cde906'),
     // o: RGB.fromHex('#e3ff00'),
     p: RGB.fromHex('#40bf40'),
@@ -250,8 +270,14 @@ LetterCube.prototype = {
       return letter.rgb().round().toHex()
     })
   },
-  choiceElements: function(listener, options) {
-    var allSolid = document.makeElement('input', [['type', 'checkbox'], ['class', 'all-solid'], 'All Solid'])
+  choiceElements: function(listener, options, substitutionStyle) {
+    var allSolid = document.makeElement('input', [ ['type', 'checkbox'], ['class', 'all-solid'], 'All Solid' ])
+
+    function updateAllSolidChecked(substitutionStyle) {
+      allSolid.checked = (undefined === new Letters(substitutionStyle).letterOf('text'))
+    }
+
+    updateAllSolidChecked(substitutionStyle)
 
     allSolid.addEventListener('click', function(event) {
       document.querySelectorAll('.solid').forEach(function(something) {
@@ -266,7 +292,7 @@ LetterCube.prototype = {
     this.alphabet.forEach(function(letter, value) {
       table.appendChild(value.choiceElements(function(rgb) {
         listener(letter, rgb)
-      }, options))
+      }, options, substitutionStyle[letter], updateAllSolidChecked))
     })
 
     var text = "var initial = {\n"

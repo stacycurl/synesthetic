@@ -1,5 +1,6 @@
 Todo:
 - Populate letter substitution style checkboxes from current config
+- Figure out how to unify an updatable options with its current value
 - Remove 'substitution style', this can be derived from the checkboxes
 - Add substitution scheme radio
 
