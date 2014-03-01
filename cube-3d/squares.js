@@ -974,7 +974,7 @@ if (typeof(Document) != 'undefined') {
     var contents = contents0 || []
 
     contents.forEach(function(content) {
-      if (content.nodeType == Document.ELEMENT_NODE) {
+      if (content.nodeType == Document.prototype.ELEMENT_NODE) {
         result.appendChild(content)
       } else if (typeof(content) == 'string') {
         result.appendChild(document.createTextNode(content))
