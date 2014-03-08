@@ -318,7 +318,7 @@ LetterCube.prototype = {
     })
   },
   css: function(style) {
-    var result = ''
+    var result = '.upper { font-size: 120% }\n'
 
     this.initial().forEach(function(letter, value) {
       if (style[letter] == 'solid') {
@@ -1120,7 +1120,7 @@ Substitutor.prototype = {
           var letterSpan = document.createElement('span')
           // letterSpan.appendChild(document.createTextNode(letter))
           letterSpan.appendChild(document.createTextNode(letter))
-          letterSpan.setAttribute('class', 'l-' + lc)
+          letterSpan.setAttribute('class', 'l-' + lc + (lc === letter ? '' : ' upper'))
           replacement.appendChild(letterSpan)
         } else {
           if (letter == ' ') {
