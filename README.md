@@ -1,4 +1,4 @@
-Synesthetic
+![Synesthetic](https://raw.githubusercontent.com/stacycurl/synesthetic/master/site/title.png)
 ===========
 
 A chrome extension to explore synthetic synesthesia.
@@ -15,3 +15,17 @@ some time this induces some synesthetic effects.
 If you want a challenge you can replace the letters completely with solid blocks of colours, b would
 become a blue rectangle. Of course reading becomes quite challenging but perhaps this will form 
 stronger associations.
+
+<br/>
+
+Here's the description again, this time in full colour:
+
+
+![alt tag](https://raw.githubusercontent.com/stacycurl/synesthetic/master/site/description.png)
+
+
+<br/>
+And again, this time in solid colours:
+
+
+![alt tag](https://raw.githubusercontent.com/stacycurl/synesthetic/master/site/solid-description.png)
