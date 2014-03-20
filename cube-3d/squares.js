@@ -883,14 +883,12 @@ function Options() {
   var hasChrome = (typeof(chrome) != 'undefined') && (chrome.storage !== undefined)
 
   var defaults = {
-    'substitution-scheme': 'colour',
     'substitution-style': Letters.const('text')
   }
 
   this.get = Options.get(hasChrome, defaults)
   this.set = Options.set(hasChrome)
   this.substitutionStyle  = this.create('substitution-style')
-  this.substitutionScheme = this.create('substitution-scheme')
 }
 
 Options.prototype = {

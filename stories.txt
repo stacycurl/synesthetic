@@ -1,4 +1,5 @@
 Todo:
+- Name set of colours
 - Sync colours choosen with stored options
 - Show standalone colours for each letter
    (similar to when you could choose a colour for space)

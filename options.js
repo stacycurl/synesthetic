@@ -24,28 +24,15 @@ Radio.prototype = {
   }
 }
 
-//var substitutionScheme = new Radio('substitution-scheme', 'Substitution Scheme', ['Ternary', 'Colour'])
-//substitutionScheme.addTo('#options')
-//var substitutionStyle = new Radio('substitution-style')
-
 
 options.substitutionStyle.get(function(value) {
   // console.log(value)
   //substitutionStyle.select(value)
 })
 
-/*
-substitutionStyle.onclick(function(value) {
-  options.substitutionStyle.set(new Letters({}).map(function(letter) {
-    return value
-  }))
-})
-*/
 
 var cube = new LetterCube()
 
-// cube.cube.drawUnfolded(document.body, 100)
-// console.log(cube.alphabet)
 var update = function(letter, rgb) {
   var hex = rgb.toHex();
 
