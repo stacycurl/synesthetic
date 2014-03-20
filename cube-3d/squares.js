@@ -883,12 +883,17 @@ function Options() {
   var hasChrome = (typeof(chrome) != 'undefined') && (chrome.storage !== undefined)
 
   var defaults = {
+    'substitution-styles': [
+      new SubstitutionStyle('default', Letters.const('text')),
+      new SubstitutionStyle('solid',   Letters.const('solid'))
+    ],
     'substitution-style': Letters.const('text')
   }
 
   this.get = Options.get(hasChrome, defaults)
   this.set = Options.set(hasChrome)
   this.substitutionStyle  = this.create('substitution-style')
+  this.substitutionStyles = this.create('substitution-styles')
 }
 
 Options.prototype = {
@@ -983,6 +988,11 @@ if (typeof(Document) != 'undefined') {
 
     return result
   }
+}
+
+function SubstitutionStyle(name, value) {
+  this.name = name
+  this.value = value
 }
 
 function Substitutor(style) {

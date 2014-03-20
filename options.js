@@ -51,6 +51,14 @@ var update = function(letter, rgb) {
   // console.log([letter, rgb])
 }
 
+options.substitutionStyles.get(function(styles) {
+  var select = document.makeElement('select', styles.map(function(style) {
+    return document.makeElement('option', [['value', style.name], style.name])
+  }))
+
+  document.body.appendChild(select)
+})
+
 options.substitutionStyle.get(function(substitutionStyle) {
   cube.choiceElements(update, options, new Letters(substitutionStyle)).forEach(function(element) {
     document.body.appendChild(element)
