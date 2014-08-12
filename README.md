@@ -1,8 +1,8 @@
 ![Synesthetic](https://raw.githubusercontent.com/stacycurl/synesthetic/master/site/title.png)
 ===========
+[![Stories in Ready](https://badge.waffle.io/stacycurl/synesthetic.png?label=ready&title=Ready)](https://waffle.io/stacycurl/synesthetic)
 
 A chrome extension to explore synthetic synesthesia.
-
 
 From wikipedia: http://en.wikipedia.org/wiki/Synesthesia
  "Synesthesia is a neurological phenomenon in which stimulation of one sensory or cognitive pathway
