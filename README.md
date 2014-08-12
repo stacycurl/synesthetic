@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/stacycurl/synesthetic.png?label=ready&title=Ready)](https://waffle.io/stacycurl/synesthetic)
 ![Synesthetic](https://raw.githubusercontent.com/stacycurl/synesthetic/master/site/title.png)
 ===========
 
