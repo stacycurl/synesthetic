@@ -66,5 +66,3 @@ options.substitutionStyle.get(function(substitutionStyle) {
 
   cube.initial(update)
 })
-
-

@@ -42,10 +42,11 @@ Letters.map     = function(f) { return new Letters({}).map(f)                }
 Letters.forEach = function(f) { return new Letters({}).forEach(f)            }
 Letters.const   = function(c) { return Letters.map(function(_) { return c }) }
 
-function Choice(face, x, y) {
-  this.face = face
-  this.x    = new Percent(x)
-  this.y    = new Percent(y)
+function Choice(face, letter, x, y) {
+  this.face   = face
+  this.letter = letter
+  this.x      = new Percent(x)
+  this.y      = new Percent(y)
 }
 
 Choice.prototype = {
@@ -65,8 +66,10 @@ Choice.prototype = {
       min(this.x.percent), max(this.x.percent), min(this.y.percent), max(this.y.percent))
   },
   choiceElements: function(listener) {
-    //var img = this.selection().img(100, function(x, y, rgb) {
-    var img = this.face.img(100, function(x, y, rgb) {
+    var allowAnyColourInFace = false;
+    var selection = allowAnyColourInFace ? this.face : this.selection();
+
+    var img = selection.img(100, function(x, y, rgb) {
       listener(rgb)
     })
 
@@ -209,7 +212,8 @@ function LetterCube() {
     c: RGB.fromHex('#b4ffb4'),
     //c: RGB.fromHex('#95ff95'),
     //c: RGB.fromHex('#b4ffb4'),
-    d: RGB.fromHex('#40bfbf'),
+    // d: RGB.fromHex('#40bfbf'),
+    d: RGB.fromHex('#3bceaf'),
     e: RGB.fromHex('#0080ff'),
     f: RGB.fromHex('#00ff00'),
     g: RGB.fromHex('#04f3c7'),
@@ -230,12 +234,15 @@ function LetterCube() {
     p: RGB.fromHex('#40bf40'),
     q: RGB.fromHex('#008080'),
     r: RGB.fromHex('#ff0000'),
-    s: RGB.fromHex('#e51e5c'),
+    // s: RGB.fromHex('#e51e5c'),
+    // s: RGB.fromHex('#ff0080'),
+    s: RGB.fromHex('#d427ad'),
     t: RGB.fromHex('#ff00ff'),
     u: RGB.fromHex('#ff8000'),
-    v: RGB.fromHex('#bf4040'),
-    w: RGB.fromHex('#aa00aa'),
-    //w: RGB.fromHex('#800080'),
+    // v: RGB.fromHex('#bf4040'),
+    v: RGB.fromHex('#b15e25'),
+    //w: RGB.fromHex('#aa00aa'),
+    w: RGB.fromHex('#800080'),
     x: RGB.fromHex('#ffff00'),
     y: RGB.fromHex('#808000'),
     z: RGB.fromHex('#000000')
@@ -243,7 +250,7 @@ function LetterCube() {
 
 
   var alphabet = new Letters({
-    m: new Letter('m', initial.m, [new Choice(new ColourSquare(RGB.white, RGB.black, RGB.white, RGB.black), 0.5, 0)])
+    m: new Letter('m', initial.m, [new Choice(new ColourSquare(RGB.white, RGB.black, RGB.white, RGB.black), 'm', 0.5, 0)])
   })
 
   cube.forEachFace(function(face) {
@@ -254,7 +261,7 @@ function LetterCube() {
 
       if (percentages !== undefined) {
         alphabet[letter] = (alphabet[letter] || new Letter(letter, initial[letter]))
-          .add(new Choice(face, percentages[0], percentages[1]))
+          .add(new Choice(face, letter, percentages[0], percentages[1]))
       }
     })
   })
@@ -322,9 +329,9 @@ LetterCube.prototype = {
 
     this.initial().forEach(function(letter, value) {
       if (style[letter] == 'solid') {
-        result = result + '.l-' + letter + ' { background: ' + value + '; color: ' + value + '; font-family: courier; font-weight: bold; white-space:nowrap; }\n'
+       result = result + '.l-' + letter + ' { background: ' + value + '; color: ' + value + '; white-space:nowrap; }\n'
       } else {
-        result = result + '.l-' + letter + ' { color: ' + value + '; font-weight: bold; white-space:nowrap; }\n'
+       result = result + '.l-' + letter + ' { color: ' + value + '; font-weight: bold; white-space:nowrap; }\n'
       }
     })
 
@@ -1127,13 +1134,14 @@ Substitutor.prototype = {
         if (mapped !== undefined) {
           var letterSpan = document.createElement('span')
           // letterSpan.appendChild(document.createTextNode(letter))
-          letterSpan.appendChild(document.createTextNode(letter))
+          letterSpan.appendChild(document.createTextNode('.'))
           letterSpan.setAttribute('class', 'l-' + lc + (lc === letter ? '' : ' upper'))
           replacement.appendChild(letterSpan)
         } else {
           if (letter == ' ') {
             letter = ' \u00A0'
           }
+
           replacement.appendChild(document.createTextNode(letter))
         }
       }
