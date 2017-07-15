@@ -735,7 +735,6 @@ RGB.blue    = new RGB(  0,   0, 255)
 RGB.cyan    = new RGB(  0, 255, 255)
 RGB.magenta = new RGB(255,   0, 255)
 RGB.yellow  = new RGB(255, 255,   0)
-RGB.red     = new RGB(255,   0,   0)
 
 RGB.random = function(dp) {
   function rnd() { return Math.random() * 256 }
@@ -861,10 +860,6 @@ CIELch.prototype = {
   interpolate: function(other, percentage) {
     var fromColor = this
     var toColor = other
-    var steps = 5;
-
-    var numSteps = steps;
-
     var toH = toColor.h
     var fromH = fromColor.h
     var diff = toH - fromH;

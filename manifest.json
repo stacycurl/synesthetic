@@ -7,11 +7,11 @@
   "options_page": "options.html",
 
   "permissions": [
-    "activeTab", "storage"
+    "activeTab", "storage", "http://*/", "https://*/"
   ],
 
   "background": {
-    "scripts": ["cube-3d/squares.js", "background.js"],
+    "scripts": ["cube-3d/squares.js", "elm.js", "background.js", "backgroundBody.js"],
     "persistent": false
   },
 
